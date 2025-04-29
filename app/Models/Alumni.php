@@ -27,4 +27,10 @@ class Alumni extends Model
     {
         return $this->hasOne(User::class);
     }
+
+    // Relasi oneToMany ke model Pekerjaan
+    public function pekerjaans()
+    {
+        return $this->hasMany(Pekerjaan::class);
+    }
 }
