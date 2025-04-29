@@ -111,7 +111,6 @@
     }
   </style>
 </head>
-
 <body>
   <!-- Navbar -->
   <nav class="fixed top-0 left-0 w-full backdrop-blur-lg bg-slate-900/80 z-50 shadow-md">
