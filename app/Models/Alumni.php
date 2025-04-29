@@ -33,4 +33,10 @@ class Alumni extends Model
     {
         return $this->hasMany(Pekerjaan::class);
     }
+
+    // Relasi oneToMany ke model PendidikanLanjutan
+    public function pendidikanLanjutans()
+    {
+        return $this->hasMany(PendidikanLanjutan::class);
+    }
 }
