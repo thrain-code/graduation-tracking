@@ -49,7 +49,7 @@
 @section('content')
     <!-- Welcome Message -->
     <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-800">Selamat Datang, {{ auth()->user()->username ?? 'Admin' }}!</h1>
+        <h1 class="text-2xl font-bold text-slate-800">Selamat Datang, {{ auth()->user()->name ?? 'Admin' }}!</h1>
         <p class="text-slate-500">Berikut adalah ringkasan data alumni PTIK per {{ date('d F Y') }}</p>
     </div>
     
