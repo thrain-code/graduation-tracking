@@ -60,7 +60,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center">
+                    <a href="#" class="flex items-center">
                         <i class="fas fa-graduation-cap text-2xl text-primary-500 mr-3"></i>
                         <span class="text-white font-bold text-xl">PTIK Alumni</span>
                     </a>
@@ -69,14 +69,14 @@
                         <a href="#testimonials" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Testimoni</a>
                         <a href="#statistics" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Statistik</a>
                         <a href="#faq" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">FAQ</a>
-                        <a href="{{ route('alumni.tracking') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Data Alumni</a>
+                        <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Data Alumni</a>
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <a href="{{ route('login') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <a href="#" class="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                         <i class="fas fa-sign-in-alt mr-2"></i> Login
                     </a>
-                    <a href="{{ route('register') }}" class="hidden md:ml-3 md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <a href="#" class="hidden md:ml-3 md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                         <i class="fas fa-user-plus mr-2"></i> Register
                     </a>
                     <button type="button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-800 focus:outline-none" id="mobile-menu-button">
@@ -93,15 +93,15 @@
                 <a href="#testimonials" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Testimoni</a>
                 <a href="#statistics" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Statistik</a>
                 <a href="#faq" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">FAQ</a>
-                <a href="{{ route('alumni.tracking') }}" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Data Alumni</a>
+                <a href="#" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Data Alumni</a>
                 <div class="pt-4 pb-3 border-t border-gray-700">
                     <div class="flex items-center px-5">
-                        <a href="{{ route('login') }}" class="w-full block text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <a href="#" class="w-full block text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                             <i class="fas fa-sign-in-alt mr-2"></i> Login
                         </a>
                     </div>
                     <div class="mt-3 px-5">
-                        <a href="{{ route('register') }}" class="w-full block text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <a href="#" class="w-full block text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                             <i class="fas fa-user-plus mr-2"></i> Register
                         </a>
                     </div>
@@ -133,10 +133,10 @@
                         Platform digital untuk menghubungkan alumni PTIK Institut Prima Bangsa. Jalin networking, akses informasi karir, dan ikuti perkembangan sesama alumni.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="{{ route('login') }}" class="btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg inline-flex items-center justify-center">
+                        <a href="#" class="btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg inline-flex items-center justify-center">
                             <i class="fas fa-sign-in-alt mr-2"></i> Masuk Portal
                         </a>
-                        <a href="{{ route('alumni.tracking') }}" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-xl inline-flex items-center justify-center border border-white/10">
+                        <a href="#" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-xl inline-flex items-center justify-center border border-white/10">
                             <i class="fas fa-chart-line mr-2"></i> Lihat Statistik
                         </a>
                     </div>
@@ -337,7 +337,7 @@
                     </div>
                     <h3 class="text-xl font-semibold text-white mb-3">Statistik & Tracer</h3>
                     <p class="text-slate-300 mb-4">Lihat visualisasi data alumni, distribusi karier, dan pemetaan lokasi alumni secara real-time.</p>
-                    <a href="{{ route('alumni.tracking') }}" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
+                    <a href="#" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
                         Lihat Selengkapnya 
                         <i class="fas fa-arrow-right ml-2 text-xs"></i>
                     </a>
@@ -424,7 +424,7 @@
             </div>
             
             <div class="text-center mt-12">
-                <a href="{{ route('testimonials') }}" class="inline-flex items-center text-primary-400 hover:text-primary-300 font-medium">
+                <a href="" class="inline-flex items-center text-primary-400 hover:text-primary-300 font-medium">
                     Lihat Semua Testimoni
                     <i class="fas fa-arrow-right ml-2"></i>
                 </a>
@@ -480,7 +480,7 @@
             </div>
             
             <div class="mt-12 text-center">
-                <a href="{{ route('alumni.tracking') }}" class="inline-block btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg">
+                <a href="#" class="inline-block btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg">
                     Lihat Statistik Lengkap
                 </a>
             </div>
@@ -567,10 +567,10 @@
                         <h2 class="text-3xl font-bold text-white mb-4">Bergabung dengan Komunitas Alumni PTIK</h2>
                         <p class="text-slate-300 mb-4">Jangan lewatkan kesempatan untuk terhubung dengan sesama alumni, mengakses peluang karier, dan terus mengembangkan jaringan profesional Anda.</p>
                         <div class="flex flex-wrap gap-4 mt-6">
-                            <a href="{{ route('register') }}" class="btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg inline-flex items-center justify-center">
+                            <a href="#" class="btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg inline-flex items-center justify-center">
                                 <i class="fas fa-user-plus mr-2"></i> Daftar Sekarang
                             </a>
-                            <a href="{{ route('login') }}" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-xl inline-flex items-center justify-center border border-white/10">
+                            <a href="#" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-xl inline-flex items-center justify-center border border-white/10">
                                 <i class="fas fa-sign-in-alt mr-2"></i> Login
                             </a>
                         </div>
@@ -622,9 +622,9 @@
                         <li><a href="#testimonials" class="text-slate-400 hover:text-white">Testimoni</a></li>
                         <li><a href="#statistics" class="text-slate-400 hover:text-white">Statistik</a></li>
                         <li><a href="#faq" class="text-slate-400 hover:text-white">FAQ</a></li>
-                        <li><a href="{{ route('alumni.tracking') }}" class="text-slate-400 hover:text-white">Data Alumni</a></li>
-                        <li><a href="{{ route('login') }}" class="text-slate-400 hover:text-white">Login</a></li>
-                        <li><a href="{{ route('register') }}" class="text-slate-400 hover:text-white">Register</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white">Data Alumni</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white">Login</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-white">Register</a></li>
                     </ul>
                 </div>
                 
