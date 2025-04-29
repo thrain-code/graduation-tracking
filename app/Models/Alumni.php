@@ -21,4 +21,10 @@ class Alumni extends Model
     {
         return $this->belongsTo(Prodi::class);
     }
+
+    // Relasi oneToOne ke model User
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }
