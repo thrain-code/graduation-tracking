@@ -119,7 +119,7 @@
       <div class="flex items-center justify-between h-16">
         <div class="flex-shrink-0">
           <a href="#" class="flex items-center">
-            <img src="../assets/logo.ico" alt="Institut Prima Bangsa Logo" class="h-10 w-auto mr-3">
+            <img src="{{ asset('assets/logo.ico') }}" alt="Institut Prima Bangsa Logo" class="h-10 w-auto mr-3">
             <span class="text-white font-bold text-xl">Institut Prima Bangsa</span>
           </a>
         </div>
@@ -135,9 +135,6 @@
             <a href="#sektor"
               class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sektor
               Kerja</a>
-            <a href="#perusahaan"
-              class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Top
-              Perusahaan</a>
           </div>
         </div>
         <div class="-mr-2 flex md:hidden">
