@@ -146,9 +146,8 @@
                     </div>
                 </div>
                 
-                <form method="POST" action="/login" class="space-y-6">
-                    <!-- CSRF Token -->
-                    <input type="hidden" name="_token" value="csrf_token_value">
+                <form method="POST" action="{{ route('login') }}" class="space-y-6">
+                    @csrf
                     
                     <div>
                         <label for="email" class="block text-sm font-medium text-slate-300 mb-1">Email</label>
