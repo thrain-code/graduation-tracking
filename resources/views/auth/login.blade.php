@@ -131,20 +131,24 @@
             <!-- Login Form -->
             <div class="login-card rounded-2xl p-8 shadow-2xl">
                 <!-- Alert Error -->
-                <div class="bg-red-500/20 text-red-400 px-4 py-3 rounded-lg mb-6 hidden">
+                @if(session('error'))
+                <div class="bg-red-500/20 text-red-400 px-4 py-3 rounded-lg mb-6">
                     <div class="flex items-center">
                         <i class="fas fa-exclamation-circle mr-2"></i>
-                        <p>Email atau password salah. Silakan coba lagi.</p>
+                        <p>{{ session('error') }}</p>
                     </div>
                 </div>
+                @endif
                 
                 <!-- Alert Success -->
-                <div class="bg-green-500/20 text-green-400 px-4 py-3 rounded-lg mb-6 hidden">
+                @if(session('success'))
+                <div class="bg-green-500/20 text-green-400 px-4 py-3 rounded-lg mb-6">
                     <div class="flex items-center">
                         <i class="fas fa-check-circle mr-2"></i>
-                        <p>Berhasil masuk. Mengalihkan...</p>
+                        <p>{{ session('success') }}</p>
                     </div>
                 </div>
+                @endif
                 
                 <form method="POST" action="{{ route('login') }}" class="space-y-6">
                     @csrf
@@ -155,8 +159,11 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-envelope text-slate-500"></i>
                             </div>
-                            <input id="email" name="email" type="email" autocomplete="email" required class="input-field w-full pl-10 py-3 rounded-lg focus:outline-none text-white" placeholder="Masukkan email">
+                            <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required class="input-field w-full pl-10 py-3 rounded-lg focus:outline-none text-white @error('email') border-red-500 @enderror" placeholder="Masukkan email">
                         </div>
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     
                     <div>
@@ -165,11 +172,14 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-lock text-slate-500"></i>
                             </div>
-                            <input id="password" name="password" type="password" autocomplete="current-password" required class="input-field w-full pl-10 py-3 rounded-lg focus:outline-none text-white" placeholder="Masukkan password">
+                            <input id="password" name="password" type="password" autocomplete="current-password" required class="input-field w-full pl-10 py-3 rounded-lg focus:outline-none text-white @error('password') border-red-500 @enderror" placeholder="Masukkan password">
                             <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
                                 <i class="fas fa-eye text-slate-500"></i>
                             </button>
                         </div>
+                        @error('password')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     
                     <div class="flex items-center justify-between">
@@ -198,7 +208,7 @@
             <!-- Copyright -->
             <div class="mt-4 text-center">
                 <p class="text-xs text-slate-500">
-                    &copy; 2025 Institut Prima Bangsa. Hak Cipta Dilindungi.
+                    &copy; {{ date('Y') }} Institut Prima Bangsa. Hak Cipta Dilindungi.
                 </p>
             </div>
         </div>
