@@ -115,9 +115,6 @@
             <a href="#tren"
               class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Tren
               Alumni</a>
-            <a href="#sektor"
-              class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sektor
-              Kerja</a>
           </div>
         </div>
         <div class="-mr-2 flex md:hidden">
@@ -135,8 +132,6 @@
         <a href="#beranda" class="text-white block px-3 py-2 rounded-md text-base font-medium">Beranda</a>
         <a href="#statistik" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Statistik</a>
         <a href="#tren" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Tren Alumni</a>
-        <a href="#sektor" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Sektor Kerja</a>
-        <a href="#perusahaan" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Top Perusahaan</a>
       </div>
     </div>
   </nav>
@@ -156,13 +151,21 @@
         Perjalanan Karir Alumni <span class="text-primary-400">Institut Prima Bangsa</span>
       </h1>
       <p class="text-lg md:text-xl text-slate-200 mb-8 leading-relaxed">
-        Visualisasi data alumni IPB dari tahun 2019-2024 mencakup distribusi karir, studi lanjut, dan perkembangan
+        @if(count($alumni) > 0)
+        Visualisasi data {{ count($alumni) }} alumni IPB dari berbagai tahun kelulusan mencakup distribusi karir, studi lanjut, dan perkembangan
         profesional.
+        @else
+        Belum ada data alumni yang tersedia saat ini. Silakan kembali lagi nanti.
+        @endif
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#statistik"
           class="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
           Lihat Statistik
+        </a>
+        <a href="{{ route('login.form') }}"
+          class="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
+          Login Alumni
         </a>
       </div>
     </div>
@@ -174,22 +177,27 @@
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-white mb-4">Statistik Alumni</h2>
-        <p class="text-slate-300 max-w-2xl mx-auto">Persentase keberhasilan lulusan Institut Prima Bangsa dalam memasuki
-          dunia kerja, pendidikan lanjut, dan pencapaian lainnya.</p>
+        <p class="text-slate-300 max-w-2xl mx-auto">
+          @if(count($alumni) > 0)
+          Persentase keberhasilan lulusan Institut Prima Bangsa dalam memasuki dunia kerja, pendidikan lanjut, dan pencapaian lainnya.
+          @else
+          Belum ada data statistik alumni yang tersedia saat ini.
+          @endif
+        </p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-6">
+      <div class="grid md:grid-cols-2 gap-6">
         <div
           class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
           <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-green-500/20 text-green-400 mb-4">
             <i class="fas fa-briefcase text-3xl"></i>
           </div>
-          <h3 class="text-3xl font-bold text-green-400 mb-1">82%</h3>
+          <h3 class="text-3xl font-bold text-green-400 mb-1">{{ $stats['bekerja_percent'] }}%</h3>
           <p class="text-slate-300 mb-3 font-medium">Sudah Bekerja</p>
           <p class="text-slate-400 text-sm">Bekerja di berbagai sektor industri dalam waktu kurang dari 6 bulan setelah
             lulus.</p>
           <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div class="bg-green-400 h-full rounded-full" style="width: 82%"></div>
+            <div class="bg-green-400 h-full rounded-full" style="width: {{ $stats['bekerja_percent'] }}%"></div>
           </div>
         </div>
 
@@ -198,25 +206,12 @@
           <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-blue-500/20 text-blue-400 mb-4">
             <i class="fas fa-graduation-cap text-3xl"></i>
           </div>
-          <h3 class="text-3xl font-bold text-blue-400 mb-1">12%</h3>
+          <h3 class="text-3xl font-bold text-blue-400 mb-1">{{ $stats['studi_lanjut_percent'] }}%</h3>
           <p class="text-slate-300 mb-3 font-medium">Lanjut Studi</p>
           <p class="text-slate-400 text-sm">Melanjutkan pendidikan ke jenjang S2 atau program studi lanjutan lainnya.
           </p>
           <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div class="bg-blue-400 h-full rounded-full" style="width: 12%"></div>
-          </div>
-        </div>
-
-        <div
-          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
-          <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-amber-500/20 text-amber-400 mb-4">
-            <i class="fas fa-search text-3xl"></i>
-          </div>
-          <h3 class="text-3xl font-bold text-amber-400 mb-1">6%</h3>
-          <p class="text-slate-300 mb-3 font-medium">Mencari Kerja</p>
-          <p class="text-slate-400 text-sm">Dalam proses mencari pekerjaan atau menyelesaikan program sertifikasi.</p>
-          <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div class="bg-amber-400 h-full rounded-full" style="width: 6%"></div>
+            <div class="bg-blue-400 h-full rounded-full" style="width: {{ $stats['studi_lanjut_percent'] }}%"></div>
           </div>
         </div>
       </div>
@@ -232,21 +227,27 @@
             </div>
           </div>
 
+          @if($stats['bekerja'] > 0)
           <div class="grid grid-cols-3 gap-4">
             <div class="text-center p-3 rounded-lg bg-white/5">
-              <p class="text-2xl font-bold text-purple-400">68%</p>
-              <p class="text-slate-300 text-sm">
-                < 3 bulan</p>
+              <p class="text-2xl font-bold text-purple-400">{{ $stats['waktu_tunggu']['kurang_3_bulan_percent'] }}%</p>
+              <p class="text-slate-300 text-sm">< 3 bulan</p>
             </div>
             <div class="text-center p-3 rounded-lg bg-white/5">
-              <p class="text-2xl font-bold text-purple-400">25%</p>
+              <p class="text-2xl font-bold text-purple-400">{{ $stats['waktu_tunggu']['3_6_bulan_percent'] }}%</p>
               <p class="text-slate-300 text-sm">3-6 bulan</p>
             </div>
             <div class="text-center p-3 rounded-lg bg-white/5">
-              <p class="text-2xl font-bold text-purple-400">7%</p>
+              <p class="text-2xl font-bold text-purple-400">{{ $stats['waktu_tunggu']['lebih_6_bulan_percent'] }}%</p>
               <p class="text-slate-300 text-sm">> 6 bulan</p>
             </div>
           </div>
+          @else
+          <div class="text-center p-6 text-slate-400">
+            <i class="fas fa-info-circle mb-2 text-xl"></i>
+            <p>Belum ada data waktu tunggu yang tersedia</p>
+          </div>
+          @endif
         </div>
 
         <div
@@ -258,20 +259,27 @@
             </div>
           </div>
 
+          @if($stats['bekerja'] > 0)
           <div class="grid grid-cols-3 gap-4">
             <div class="text-center p-3 rounded-lg bg-white/5">
-              <p class="text-2xl font-bold text-teal-400">75%</p>
+              <p class="text-2xl font-bold text-teal-400">{{ $stats['kesesuaian']['sangat_sesuai_percent'] }}%</p>
               <p class="text-slate-300 text-sm">Sangat Sesuai</p>
             </div>
             <div class="text-center p-3 rounded-lg bg-white/5">
-              <p class="text-2xl font-bold text-teal-400">20%</p>
+              <p class="text-2xl font-bold text-teal-400">{{ $stats['kesesuaian']['cukup_sesuai_percent'] }}%</p>
               <p class="text-slate-300 text-sm">Cukup Sesuai</p>
             </div>
             <div class="text-center p-3 rounded-lg bg-white/5">
-              <p class="text-2xl font-bold text-teal-400">5%</p>
+              <p class="text-2xl font-bold text-teal-400">{{ $stats['kesesuaian']['kurang_sesuai_percent'] }}%</p>
               <p class="text-slate-300 text-sm">Kurang Sesuai</p>
             </div>
           </div>
+          @else
+          <div class="text-center p-6 text-slate-400">
+            <i class="fas fa-info-circle mb-2 text-xl"></i>
+            <p>Belum ada data kesesuaian yang tersedia</p>
+          </div>
+          @endif
         </div>
       </div>
     </div>
@@ -281,8 +289,13 @@
   <section id="tren" class="py-20 px-6 bg-slate-900/50">
     <div class="max-w-5xl mx-auto mb-14 text-center">
       <h2 class="text-3xl font-bold text-white mb-4">Perkembangan Status Alumni</h2>
-      <p class="text-slate-300 max-w-2xl mx-auto">Tren status alumni Institut Prima Bangsa dari tahun 2019 hingga 2024
-        menunjukkan peningkatan persentase alumni yang bekerja.</p>
+      <p class="text-slate-300 max-w-2xl mx-auto">
+        @if(count($alumni) > 0)
+        Tren status alumni Institut Prima Bangsa dari tahun {{ min(array_keys($stats['yearly_data'] ?? [2019 => true])) }} hingga terkini menunjukkan persentase alumni berdasarkan status.
+        @else
+        Belum ada data tren alumni yang tersedia saat ini.
+        @endif
+      </p>
     </div>
 
     <div
@@ -294,13 +307,20 @@
         <button
           class="chart-filter px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 border border-white/5"
           data-chart="salary">Rentang Gaji</button>
-        <button
-          class="chart-filter px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 border border-white/5"
-          data-chart="companies">Perusahaan</button>
       </div>
 
       <div class="relative">
+        @if(count($alumni) > 0)
         <canvas id="alumniChart" class="w-full" style="height: 380px;"></canvas>
+        @else
+        <div class="flex items-center justify-center h-80">
+          <div class="text-slate-400 text-center">
+            <i class="fas fa-chart-line text-4xl mb-4 opacity-30"></i>
+            <p>Belum ada data untuk ditampilkan</p>
+          </div>
+        </div>
+        @endif
+        
         <div id="chartLoader"
           class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
           <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
@@ -309,91 +329,56 @@
     </div>
   </section>
 
-  <!-- Sektor Kerja -->
-  <section id="sektor" class="py-20 px-6">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-white mb-4">Sektor Pekerjaan Alumni</h2>
-        <p class="text-slate-300 max-w-2xl mx-auto">Distribusi alumni berdasarkan sektor industri tempat mereka
-          berkarir.</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-8">
-        <div
-          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 flex flex-col justify-center">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Distribusi Sektor (2024)</h3>
-            <select id="yearSelect"
-              class="bg-slate-800 text-white border border-slate-700 rounded-lg px-3 py-1 text-sm">
-              <option value="2024" selected>2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-              <option value="2021">2021</option>
-              <option value="2020">2020</option>
-              <option value="2019">2019</option>
-            </select>
+  <!-- Footer -->
+  <footer class="py-10 bg-slate-900 border-t border-slate-800">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <a href="#" class="flex items-center">
+            <img src="{{ asset('assets/logo.ico') }}" alt="Institut Prima Bangsa Logo" class="h-8 w-auto mr-2">
+            <span class="text-white font-bold text-lg">Institut Prima Bangsa</span>
+          </a>
+          <p class="text-slate-400 mt-2 max-w-md">Melacak perjalanan karir alumni untuk membentuk masa depan pendidikan yang lebih baik.</p>
+        </div>
+        <div class="flex flex-col md:flex-row gap-8">
+          <div>
+            <h3 class="text-white font-semibold mb-3">Navigasi</h3>
+            <ul class="space-y-2">
+              <li><a href="#beranda" class="text-slate-400 hover:text-white">Beranda</a></li>
+              <li><a href="#statistik" class="text-slate-400 hover:text-white">Statistik</a></li>
+              <li><a href="#tren" class="text-slate-400 hover:text-white">Tren Alumni</a></li>
+            </ul>
           </div>
-          <div style="height: 320px; width: 100%; position: relative;">
-            <canvas id="sectorChart"></canvas>
+          <div>
+            <h3 class="text-white font-semibold mb-3">Kontak</h3>
+            <ul class="space-y-2">
+              <li class="flex items-center text-slate-400">
+                <i class="fas fa-map-marker-alt w-5 text-primary-500"></i>
+                <span>Jl. Pendidikan No. 123, Jakarta</span>
+              </li>
+              <li class="flex items-center text-slate-400">
+                <i class="fas fa-envelope w-5 text-primary-500"></i>
+                <span>info@institutprimabangsa.ac.id</span>
+              </li>
+              <li class="flex items-center text-slate-400">
+                <i class="fas fa-phone w-5 text-primary-500"></i>
+                <span>+62 21 5569 9876</span>
+              </li>
+            </ul>
           </div>
         </div>
-
-        <div class="space-y-4">
-          <div
-            class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-4 shadow-xl border border-slate-700/30 flex items-center">
-            <div class="w-3 h-10 bg-blue-500 rounded-full mr-4"></div>
-            <div class="flex-1">
-              <h4 class="font-semibold text-white">Teknologi Informasi</h4>
-              <p class="text-slate-400 text-sm">54% alumni bekerja di perusahaan teknologi</p>
-            </div>
-            <div class="text-2xl font-bold text-blue-400">54%</div>
-          </div>
-
-          <div
-            class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-4 shadow-xl border border-slate-700/30 flex items-center">
-            <div class="w-3 h-10 bg-purple-500 rounded-full mr-4"></div>
-            <div class="flex-1">
-              <h4 class="font-semibold text-white">Pendidikan</h4>
-              <p class="text-slate-400 text-sm">15% alumni bekerja di institusi pendidikan</p>
-            </div>
-            <div class="text-2xl font-bold text-purple-400">15%</div>
-          </div>
-
-          <div
-            class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-4 shadow-xl border border-slate-700/30 flex items-center">
-            <div class="w-3 h-10 bg-green-500 rounded-full mr-4"></div>
-            <div class="flex-1">
-              <h4 class="font-semibold text-white">Finansial & Perbankan</h4>
-              <p class="text-slate-400 text-sm">12% alumni bekerja di sektor keuangan</p>
-            </div>
-            <div class="text-2xl font-bold text-green-400">12%</div>
-          </div>
-
-          <div
-            class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-4 shadow-xl border border-slate-700/30 flex items-center">
-            <div class="w-3 h-10 bg-amber-500 rounded-full mr-4"></div>
-            <div class="flex-1">
-              <h4 class="font-semibold text-white">E-Commerce</h4>
-              <p class="text-slate-400 text-sm">14% alumni bekerja di perusahaan e-commerce</p>
-            </div>
-            <div class="text-2xl font-bold text-amber-400">14%</div>
-          </div>
-
-          <div
-            class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-4 shadow-xl border border-slate-700/30 flex items-center">
-            <div class="w-3 h-10 bg-red-500 rounded-full mr-4"></div>
-            <div class="flex-1">
-              <h4 class="font-semibold text-white">Lainnya</h4>
-              <p class="text-slate-400 text-sm">5% alumni bekerja di sektor lainnya</p>
-            </div>
-            <div class="text-2xl font-bold text-red-400">5%</div>
-          </div>
+      </div>
+      <div class="border-t border-slate-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-slate-500 text-sm mb-4 md:mb-0">© {{ date('Y') }} Institut Prima Bangsa. Semua hak dilindungi.</p>
+        <div class="flex space-x-4">
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
         </div>
       </div>
     </div>
-  </section>
-
-  <x-Footer/>
+  </footer>
 
   <!-- Back to top button -->
   <button id="backToTop"
@@ -514,17 +499,29 @@
         }
       }, 1000);
 
+      @if(count($alumni) > 0)
       // Alumni Chart
       const alumniChartCtx = document.getElementById('alumniChart');
       if (alumniChartCtx) {
+        // Mendapatkan data dari controller
+        const yearlyData = @json($stats['yearly_data'] ?? []);
+        
+        // Ekstrak tahun dan urutkan
+        const years = Object.keys(yearlyData).sort();
+        
+        // Siapkan data untuk chart
+        const bekerjaData = years.map(year => yearlyData[year]?.bekerja_percent || 0);
+        const studiData = years.map(year => yearlyData[year]?.studi_lanjut_percent || 0);
+        const mencariKerjaData = years.map(year => yearlyData[year]?.mencari_kerja_percent || 0);
+
         const alumniChart = new Chart(alumniChartCtx, {
           type: 'line',
           data: {
-            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            labels: years,
             datasets: [
               {
                 label: 'Bekerja',
-                data: [72, 75, 78, 79, 80, 82],
+                data: bekerjaData,
                 borderColor: '#22C55E',
                 backgroundColor: 'rgba(34,197,94,0.1)',
                 tension: 0.4,
@@ -532,17 +529,9 @@
               },
               {
                 label: 'Lanjut Studi',
-                data: [18, 16, 15, 14, 13, 12],
+                data: studiData,
                 borderColor: '#3B82F6',
                 backgroundColor: 'rgba(59,130,246,0.1)',
-                tension: 0.4,
-                fill: true
-              },
-              {
-                label: 'Mencari Kerja',
-                data: [10, 9, 7, 7, 7, 6],
-                borderColor: '#F59E0B',
-                backgroundColor: 'rgba(245,158,11,0.1)',
                 tension: 0.4,
                 fill: true
               }
@@ -644,7 +633,7 @@
               alumniChart.data.datasets = [
                 {
                   label: 'Bekerja',
-                  data: [72, 75, 78, 79, 80, 82],
+                  data: bekerjaData,
                   borderColor: '#22C55E',
                   backgroundColor: 'rgba(34,197,94,0.1)',
                   tension: 0.4,
@@ -652,26 +641,20 @@
                 },
                 {
                   label: 'Lanjut Studi',
-                  data: [18, 16, 15, 14, 13, 12],
+                  data: studiData,
                   borderColor: '#3B82F6',
                   backgroundColor: 'rgba(59,130,246,0.1)',
-                  tension: 0.4,
-                  fill: true
-                },
-                {
-                  label: 'Mencari Kerja',
-                  data: [10, 9, 7, 7, 7, 6],
-                  borderColor: '#F59E0B',
-                  backgroundColor: 'rgba(245,158,11,0.1)',
                   tension: 0.4,
                   fill: true
                 }
               ];
             } else if (chartType === 'salary') {
+              // Ini tetap menggunakan data simulasi karena tidak ada data gaji nyata
+              // dalam struktur data yang diberikan
               alumniChart.data.datasets = [
                 {
                   label: '< 8 juta',
-                  data: [60, 55, 48, 40, 35, 30],
+                  data: years.map(() => Math.floor(Math.random() * 20) + 40), // Simulasi data gaji rendah
                   borderColor: '#f43f5e',
                   backgroundColor: 'rgba(244,63,94,0.1)',
                   tension: 0.4,
@@ -679,7 +662,7 @@
                 },
                 {
                   label: '8-12 juta',
-                  data: [30, 32, 35, 40, 42, 45],
+                  data: years.map(() => Math.floor(Math.random() * 15) + 30), // Simulasi data gaji menengah
                   borderColor: '#8b5cf6',
                   backgroundColor: 'rgba(139,92,246,0.1)',
                   tension: 0.4,
@@ -687,52 +670,9 @@
                 },
                 {
                   label: '> 12 juta',
-                  data: [10, 13, 17, 20, 23, 25],
+                  data: years.map(() => Math.floor(Math.random() * 10) + 10), // Simulasi data gaji tinggi
                   borderColor: '#10b981',
                   backgroundColor: 'rgba(16,185,129,0.1)',
-                  tension: 0.4,
-                  fill: true
-                }
-              ];
-            } else if (chartType === 'companies') {
-              alumniChart.data.datasets = [
-                {
-                  label: 'Teknologi',
-                  data: [42, 45, 48, 50, 52, 54],
-                  borderColor: '#0ea5e9',
-                  backgroundColor: 'rgba(14,165,233,0.1)',
-                  tension: 0.4,
-                  fill: true
-                },
-                {
-                  label: 'Pendidikan',
-                  data: [25, 23, 20, 18, 17, 15],
-                  borderColor: '#ec4899',
-                  backgroundColor: 'rgba(236,72,153,0.1)',
-                  tension: 0.4,
-                  fill: true
-                },
-                {
-                  label: 'Perbankan',
-                  data: [18, 17, 16, 15, 14, 12],
-                  borderColor: '#eab308',
-                  backgroundColor: 'rgba(234,179,8,0.1)',
-                  tension: 0.4,
-                  fill: true
-                },
-                {
-                  label: 'E-Commerce',
-                  data: [9, 10, 11, 12, 13, 14],
-                  borderColor: '#14b8a6',
-                  backgroundColor: 'rgba(20,184,166,0.1)',
-                  tension: 0.4,
-                  fill: true
-                },
-                {
-                  label: 'Lainnya',
-                  data: [6, 5, 5, 5, 4, 5],
-                  borderColor: '#ef4444',
-                  backgroundColor: 'rgba(239,68,68,0.1)',
                   tension: 0.4,
                   fill: true
                 }
@@ -743,131 +683,8 @@
           });
         });
       }
-
-      // Sector Chart
-      const sectorChartCtx = document.getElementById('sectorChart');
-      if (sectorChartCtx) {
-        // Data for different years
-        const sectorData = {
-          2019: {
-            labels: ['Teknologi Informasi', 'Pendidikan', 'Finansial & Perbankan', 'E-Commerce', 'Lainnya'],
-            data: [42, 25, 18, 9, 6]
-          },
-          2020: {
-            labels: ['Teknologi Informasi', 'Pendidikan', 'Finansial & Perbankan', 'E-Commerce', 'Lainnya'],
-            data: [45, 23, 17, 10, 5]
-          },
-          2021: {
-            labels: ['Teknologi Informasi', 'Pendidikan', 'Finansial & Perbankan', 'E-Commerce', 'Lainnya'],
-            data: [48, 20, 16, 11, 5]
-          },
-          2022: {
-            labels: ['Teknologi Informasi', 'Pendidikan', 'Finansial & Perbankan', 'E-Commerce', 'Lainnya'],
-            data: [50, 18, 15, 12, 5]
-          },
-          2023: {
-            labels: ['Teknologi Informasi', 'Pendidikan', 'Finansial & Perbankan', 'E-Commerce', 'Lainnya'],
-            data: [52, 17, 14, 13, 4]
-          },
-          2024: {
-            labels: ['Teknologi Informasi', 'Pendidikan', 'Finansial & Perbankan', 'E-Commerce', 'Lainnya'],
-            data: [54, 15, 12, 14, 5]
-          }
-        };
-
-        const sectorChart = new Chart(sectorChartCtx, {
-          type: 'doughnut',
-          data: {
-            labels: sectorData[2024].labels,
-            datasets: [{
-              data: sectorData[2024].data,
-              backgroundColor: [
-                '#3b82f6',
-                '#a855f7',
-                '#22c55e',
-                '#f59e0b',
-                '#ef4444'
-              ],
-              borderColor: 'rgba(15, 23, 42, 0.5)',
-              borderWidth: 1,
-              hoverOffset: 5
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  color: '#fff',
-                  usePointStyle: true,
-                  padding: 20,
-                  font: {
-                    size: 11
-                  }
-                }
-              },
-              tooltip: {
-                backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                titleColor: '#fff',
-                bodyColor: '#cbd5e1',
-                padding: 12,
-                borderColor: 'rgba(148, 163, 184, 0.2)',
-                borderWidth: 1,
-                displayColors: true,
-                usePointStyle: true,
-                callbacks: {
-                  label: function (context) {
-                    return context.label + ': ' + context.raw + '%';
-                  }
-                }
-              }
-            },
-            cutout: '65%'
-          }
-        });
-
-        // Year select change handler
-        const yearSelect = document.getElementById('yearSelect');
-        if (yearSelect) {
-          yearSelect.addEventListener('change', function () {
-            const year = this.value;
-
-            // Update chart title
-            const title = document.querySelector('#sektor h3');
-            if (title) {
-              title.textContent = `Distribusi Sektor (${year})`;
-            }
-
-            // Update chart data
-            sectorChart.data.labels = sectorData[year].labels;
-            sectorChart.data.datasets[0].data = sectorData[year].data;
-            sectorChart.update();
-
-            // Update sector percentages in the right panel
-            const sectorItems = document.querySelectorAll('#sektor .space-y-4 .backdrop-blur-xl');
-            sectorItems.forEach((item, index) => {
-              if (index < sectorData[year].labels.length) {
-                const percentText = item.querySelector('.text-2xl');
-                const descText = item.querySelector('.text-slate-400.text-sm');
-
-                if (percentText) {
-                  percentText.textContent = `${sectorData[year].data[index]}%`;
-                }
-
-                if (descText) {
-                  const sectorName = sectorData[year].labels[index].toLowerCase();
-                  const sectorPercent = sectorData[year].data[index];
-                  descText.textContent = `${sectorPercent}% alumni bekerja di ${sectorName === 'lainnya' ? 'sektor lainnya' : (sectorName.includes('&') ? 'sektor ' + sectorName : sectorName)}`;
-                }
-              }
-            });
-          });
-        }
-      }
+      @endif
     });
   </script>
 </body>
-
 </html>

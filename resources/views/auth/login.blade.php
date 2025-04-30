@@ -187,7 +187,6 @@
                             <input id="remember_me" name="remember" type="checkbox" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-slate-600 rounded bg-slate-800">
                             <label for="remember_me" class="ml-2 block text-sm text-slate-300">Ingat Saya</label>
                         </div>
-                        <a href="/forgot-password" class="text-sm text-primary-400 hover:text-primary-300">Lupa Password?</a>
                     </div>
                     
                     <div>
