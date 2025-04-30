@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\ProdiController;
@@ -19,4 +20,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Prodi
     Route::resource('/prodi', ProdiController::class);
+
+    Route::get('/alumni', [AlumniController::class, 'index']);
 });

@@ -117,4 +117,10 @@ class AlumniService
     {
         return Alumni::where('prodi_id', $prodiId)->get();
     }
+
+    // menampilkan alumni dengan prodi
+    public function getAlumniWithProdi()
+    {
+        return Alumni::with('prodi')->get();
+    }
 }
