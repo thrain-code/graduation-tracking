@@ -18,7 +18,6 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'alumni_id',
         'name',
         'email',
         'password',
@@ -51,6 +50,6 @@ class User extends Authenticatable
     // Relais oneToOne dari model Alumni
     public function alumni()
     {
-        return $this->belongsTo(Alumni::class);
+        return $this->hasOne(Alumni::class);
     }
 }

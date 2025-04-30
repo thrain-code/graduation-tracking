@@ -14,6 +14,7 @@ class Alumni extends Model
         "jenis_kelamin",
         "tahun_lulus",
         "prodi_id",
+        "user_id",
         "number_phone",
         "alamat"
     ];
@@ -27,7 +28,7 @@ class Alumni extends Model
     // Relasi oneToOne ke model User
     public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     // Relasi oneToMany ke model Pekerjaan
