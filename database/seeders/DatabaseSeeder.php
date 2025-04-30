@@ -17,8 +17,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminSeeder::class,
             ProdiSeeder::class,
-            AlumniUserSeeder::class,
-            StatusAlumniSeeder::class
+            // AlumniUserSeeder::class,
+            // StatusAlumniSeeder::class
+            UserAlumniDanStatusSeeder::class,
         ]);
     }
 }
