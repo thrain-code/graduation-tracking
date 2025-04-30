@@ -19,10 +19,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Prodi
-    Route::resource('/prodi', ProdiController::class);
-
-    Route::get('/alumni', [AlumniController::class, 'index']);
-
+    Route::get('/prodi', [ProdiController::class, 'index'])->name('prodi.index');
     // CRUD Admin
     Route::post('/admin/admins', [AdminController::class, 'store'])->name('dashboard.admin.add');
     Route::delete('/admin/admins/{id}', [AdminController::class, 'delete'])->name('dashboard.admin.delete');
