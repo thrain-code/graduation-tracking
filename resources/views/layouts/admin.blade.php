@@ -116,31 +116,31 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.alumni') }}" class="sidebar-link {{ request()->routeIs('admin.alumni*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.alumni*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-users w-6"></i>
                             <span>Alumni</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.pekerjaan') }}" class="sidebar-link {{ request()->routeIs('admin.pekerjaan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pekerjaan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-briefcase w-6"></i>
                             <span>Pekerjaan</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.pendidikan') }}" class="sidebar-link {{ request()->routeIs('admin.pendidikan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pendidikan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-graduation-cap w-6"></i>
                             <span>Pendidikan</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.prodi') }}" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.users') }}" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-user-shield w-6"></i>
                             <span>Pengguna</span>
                         </a>
@@ -189,31 +189,31 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.alumni') }}" class="sidebar-link {{ request()->routeIs('admin.alumni*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.alumni*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-users w-6"></i>
                             <span>Alumni</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.pekerjaan') }}" class="sidebar-link {{ request()->routeIs('admin.pekerjaan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pekerjaan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-briefcase w-6"></i>
                             <span>Pekerjaan</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.pendidikan') }}" class="sidebar-link {{ request()->routeIs('admin.pendidikan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pendidikan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-graduation-cap w-6"></i>
                             <span>Pendidikan</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.prodi') }}" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.users') }}" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-user-shield w-6"></i>
                             <span>Pengguna</span>
                         </a>
@@ -245,29 +245,7 @@
                             <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">3</span>
                         </button>
                         
-                        <!-- Profile -->
-                        <div class="relative">
-                            <button id="profileDropdown" class="flex items-center text-slate-300 hover:text-white focus:outline-none">
-                                <div class="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white mr-2">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <span>{{ Auth::user()->name }}</span>
-                                <i class="fas fa-chevron-down ml-2"></i>
-                            </button>
-                                
-                            <div id="profileMenu" class="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-lg hidden">
-                                <ul>
-                                    <li><a href="{{ route('admin.profile') }}" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-white rounded-t-lg">Profil</a></li>
-                                    <li><a href="{{ route('admin.settings') }}" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-white">Pengaturan</a></li>
-                                    <li>
-                                        <form action="{{ route('logout') }}" method="POST" class="w-full">
-                                            @csrf
-                                            <button type="submit" class="block w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700 hover:text-red-300 rounded-b-lg">Logout</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </header>
