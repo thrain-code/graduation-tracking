@@ -24,25 +24,10 @@ class AlumniController extends Controller
      */
     public function index(Request $request)
     {
-        dd($this->alumniService->getAlumniWithProdi());
-        // Filter berdasarkan prodi atau tahun lulus jika ada parameter
-        if ($request->has('prodi_id') && $request->prodi_id != '') {
-            $alumnis = $this->alumniService->getByProdi($request->prodi_id);
-        } elseif ($request->has('tahun_lulus') && $request->tahun_lulus != '') {
-            $alumnis = $this->alumniService->getByTahunLulus($request->tahun_lulus);
-        } else {
-            $alumnis = $this->alumniService->getAll();
-        }
-
-        $prodis = $this->prodiService->getAll();
+        $alumnis = $this->alumniService->getAll();
         
-        // Dapatkan tahun lulus yang unik untuk filter
-        $tahunLulus = $alumnis->pluck('tahun_lulus')->unique()->sort()->values();
-
         return view('alumni.index', [
-            'alumnis' => $alumnis,
-            'prodis' => $prodis,
-            'tahunLulus' => $tahunLulus
+            "alumnis" => $alumnis
         ]);
     }
 

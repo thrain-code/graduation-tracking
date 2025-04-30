@@ -13,7 +13,7 @@ class AlumniService
     // Mengambil semua data alumni
     public function getAll()
     {
-        return Alumni::all();
+        return Alumni::with(['prodi', 'user'])->get();
     }
     
     // Menambahkan data alumni
@@ -118,9 +118,10 @@ class AlumniService
         return Alumni::where('prodi_id', $prodiId)->get();
     }
 
-    // menampilkan alumni dengan prodi
-    public function getAlumniWithProdi()
+    // Hitung total alumni
+    public function getTotalAlumni()
     {
-        return Alumni::with('prodi')->get();
+        return Alumni::all()->count();
     }
+
 }
