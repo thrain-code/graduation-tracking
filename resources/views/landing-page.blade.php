@@ -237,9 +237,6 @@
         <button
           class="chart-filter px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 border border-primary-500/20 active"
           data-chart="status">Status Alumni</button>
-        <button
-          class="chart-filter px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/20 border border-white/5"
-          data-chart="salary">Rentang Gaji</button>
       </div>
 
       <div class="relative">
@@ -581,37 +578,7 @@
                   fill: true
                 }
               ];
-            } else if (chartType === 'salary') {
-              // Ini tetap menggunakan data simulasi karena tidak ada data gaji nyata
-              // dalam struktur data yang diberikan
-              alumniChart.data.datasets = [
-                {
-                  label: '< 8 juta',
-                  data: years.map(() => Math.floor(Math.random() * 20) + 40), // Simulasi data gaji rendah
-                  borderColor: '#f43f5e',
-                  backgroundColor: 'rgba(244,63,94,0.1)',
-                  tension: 0.4,
-                  fill: true
-                },
-                {
-                  label: '8-12 juta',
-                  data: years.map(() => Math.floor(Math.random() * 15) + 30), // Simulasi data gaji menengah
-                  borderColor: '#8b5cf6',
-                  backgroundColor: 'rgba(139,92,246,0.1)',
-                  tension: 0.4,
-                  fill: true
-                },
-                {
-                  label: '> 12 juta',
-                  data: years.map(() => Math.floor(Math.random() * 10) + 10), // Simulasi data gaji tinggi
-                  borderColor: '#10b981',
-                  backgroundColor: 'rgba(16,185,129,0.1)',
-                  tension: 0.4,
-                  fill: true
-                }
-              ];
-            }
-
+            } 
             alumniChart.update();
           });
         });
