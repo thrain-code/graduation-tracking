@@ -15,11 +15,11 @@ class LandingPageController extends Controller
      */
     public function index()
     {
-        // Get all alumni
+        // Get all alumni with their relations
         $alumni = Alumni::with(['status', 'prodi'])->get();
         
         // Calculate statistics
-        $stats = $this->calculateStats();
+        $stats = $this->calculateStats($alumni);
         
         return view('landing-page', compact('alumni', 'stats'));
     }
@@ -29,85 +29,100 @@ class LandingPageController extends Controller
      */
     public function getStatistics()
     {
-        $stats = $this->calculateStats();
+        $alumni = Alumni::with(['status', 'prodi'])->get();
+        $stats = $this->calculateStats($alumni);
         return response()->json($stats);
     }
     
     /**
      * Calculate overall statistics for alumni.
      */
-    private function calculateStats()
+    private function calculateStats($alumni)
     {
-        // Get all alumni count
-        $totalAlumni = Alumni::count();
+        $totalAlumni = $alumni->count();
         
-        // Count working alumni - direct database query
-        $bekerjaCount = DB::table('status')
-            ->where('type', 'bekerja')
-            ->where('is_active', true)
-            ->distinct('alumni_id')
-            ->count('alumni_id');
+        // Count working and studying alumni - using direct database queries for reliability
+        $bekerjaCount = Status::where('type', 'bekerja')
+                              ->where('is_active', true)
+                              ->distinct('alumni_id')
+                              ->count('alumni_id');
         
-        // Count studying alumni - direct database query
-        $studiLanjutCount = DB::table('status')
-            ->where('type', 'kuliah')
-            ->where('is_active', true)
-            ->distinct('alumni_id')
-            ->count('alumni_id');
+        $studiLanjutCount = Status::where('type', 'kuliah')
+                                 ->where('is_active', true)
+                                 ->distinct('alumni_id')
+                                 ->count('alumni_id');
         
         // Calculate percentages
         $bekerjaPercent = $totalAlumni > 0 ? round(($bekerjaCount / $totalAlumni) * 100, 1) : 0;
         $studiLanjutPercent = $totalAlumni > 0 ? round(($studiLanjutCount / $totalAlumni) * 100, 1) : 0;
         
-        // Create yearly data for chart
+        // Create yearly data for chart - using direct queries instead of relationships
         $yearlyData = [];
         
-        // Get the graduation years range
+        // Get range of years
         $minYear = Alumni::min('tahun_lulus') ?: 2019;
-        $maxYear = max(intval(date('Y')), Alumni::max('tahun_lulus') ?: intval(date('Y')));
+        $maxYear = max(Alumni::max('tahun_lulus') ?: 2019, (int)date('Y'));
         
-        // Initialize data for all years in the range
+        // Calculate data for each year
         for ($year = $minYear; $year <= $maxYear; $year++) {
-            // Get total alumni for this year
-            $alumniInYear = Alumni::where('tahun_lulus', $year)->count();
+            // Get alumni IDs for this year
+            $alumniIds = Alumni::where('tahun_lulus', $year)->pluck('id')->toArray();
             
-            // Get working alumni for this year
-            $bekerjaInYear = DB::table('alumnis')
-                ->join('status', 'alumnis.id', '=', 'status.alumni_id')
-                ->where('alumnis.tahun_lulus', $year)
-                ->where('status.type', 'bekerja')
-                ->where('status.is_active', true)
-                ->distinct('alumnis.id')
-                ->count('alumnis.id');
+            // Skip if no alumni in this year
+            if (empty($alumniIds)) {
+                $yearlyData[$year] = [
+                    'total' => 0,
+                    'bekerja' => 0,
+                    'bekerja_percent' => 0,
+                    'studi_lanjut' => 0,
+                    'studi_lanjut_percent' => 0,
+                    'mencari_kerja' => 0,
+                    'mencari_kerja_percent' => 0
+                ];
+                continue;
+            }
             
-            // Get studying alumni for this year
-            $studiInYear = DB::table('alumnis')
-                ->join('status', 'alumnis.id', '=', 'status.alumni_id')
-                ->where('alumnis.tahun_lulus', $year)
-                ->where('status.type', 'kuliah')
-                ->where('status.is_active', true)
-                ->distinct('alumnis.id')
-                ->count('alumnis.id');
+            // Total alumni for this year
+            $totalInYear = count($alumniIds);
+            
+            // Count working alumni in this year
+            $bekerjaInYear = Status::whereIn('alumni_id', $alumniIds)
+                                   ->where('type', 'bekerja')
+                                   ->where('is_active', true)
+                                   ->distinct('alumni_id')
+                                   ->count('alumni_id');
+            
+            // Count studying alumni in this year
+            $studiLanjutInYear = Status::whereIn('alumni_id', $alumniIds)
+                                      ->where('type', 'kuliah')
+                                      ->where('is_active', true)
+                                      ->distinct('alumni_id')
+                                      ->count('alumni_id');
             
             // Calculate percentages
-            $bekerjaPercentInYear = $alumniInYear > 0 ? round(($bekerjaInYear / $alumniInYear) * 100, 1) : 0;
-            $studiPercentInYear = $alumniInYear > 0 ? round(($studiInYear / $alumniInYear) * 100, 1) : 0;
+            $bekerjaPercentInYear = $totalInYear > 0 ? round(($bekerjaInYear / $totalInYear) * 100, 1) : 0;
+            $studiPercentInYear = $totalInYear > 0 ? round(($studiLanjutInYear / $totalInYear) * 100, 1) : 0;
+            $mencariKerjaInYear = $totalInYear - $bekerjaInYear - $studiLanjutInYear;
+            $mencariKerjaPercentInYear = 100 - $bekerjaPercentInYear - $studiPercentInYear;
             
-            // Set data for this year
+            // Store data for this year
             $yearlyData[$year] = [
-                'total' => $alumniInYear,
+                'total' => $totalInYear,
                 'bekerja' => $bekerjaInYear,
                 'bekerja_percent' => $bekerjaPercentInYear,
-                'studi_lanjut' => $studiInYear,
+                'studi_lanjut' => $studiLanjutInYear,
                 'studi_lanjut_percent' => $studiPercentInYear,
-                'mencari_kerja' => $alumniInYear - $bekerjaInYear - $studiInYear,
-                'mencari_kerja_percent' => 100 - $bekerjaPercentInYear - $studiPercentInYear
+                'mencari_kerja' => $mencariKerjaInYear,
+                'mencari_kerja_percent' => $mencariKerjaPercentInYear
             ];
         }
         
-        // Debugging - add seed data if no real data exists
-        if ($totalAlumni === 0 || $bekerjaCount === 0 && $studiLanjutCount === 0) {
-            return $this->getSampleData();
+        // Sort years
+        ksort($yearlyData);
+        
+        // Add default data if no actual data is found
+        if ($totalAlumni === 0 || empty($yearlyData)) {
+            return $this->getDefaultData();
         }
         
         return [
@@ -121,44 +136,30 @@ class LandingPageController extends Controller
     }
     
     /**
-     * Generate sample data for testing purposes.
+     * Get default data for display when no real data exists.
      */
-    private function getSampleData()
+    private function getDefaultData()
     {
         $yearlyData = [];
         
-        // Create sample data for years 2019-2025
-        for ($year = 2019; $year <= 2025; $year++) {
-            // Generate random percentages that add up to at most 100
-            $bekerjaPercent = rand(30, 60);
-            $studiPercent = rand(10, 40);
-            
-            // Ensure total doesn't exceed 100
-            if ($bekerjaPercent + $studiPercent > 100) {
-                $total = $bekerjaPercent + $studiPercent;
-                $bekerjaPercent = round(($bekerjaPercent / $total) * 100);
-                $studiPercent = round(($studiPercent / $total) * 100);
-            }
-            
-            $mencariKerjaPercent = 100 - $bekerjaPercent - $studiPercent;
-            
+        for ($year = 2019; $year <= (int)date('Y'); $year++) {
             $yearlyData[$year] = [
-                'total' => rand(20, 50),
-                'bekerja' => rand(10, 30),
-                'bekerja_percent' => $bekerjaPercent,
-                'studi_lanjut' => rand(5, 15),
-                'studi_lanjut_percent' => $studiPercent,
-                'mencari_kerja' => rand(3, 10),
-                'mencari_kerja_percent' => $mencariKerjaPercent
+                'total' => 0,
+                'bekerja' => 0,
+                'bekerja_percent' => 0,
+                'studi_lanjut' => 0,
+                'studi_lanjut_percent' => 0,
+                'mencari_kerja' => 0,
+                'mencari_kerja_percent' => 0
             ];
         }
         
         return [
-            'total_alumni' => 150,
-            'bekerja_count' => 90,
-            'bekerja_percent' => 60,
-            'studi_lanjut_count' => 45,
-            'studi_lanjut_percent' => 30,
+            'total_alumni' => 0,
+            'bekerja_count' => 0,
+            'bekerja_percent' => 0,
+            'studi_lanjut_count' => 0,
+            'studi_lanjut_percent' => 0,
             'yearly_data' => $yearlyData,
         ];
     }
