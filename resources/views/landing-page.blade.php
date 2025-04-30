@@ -50,22 +50,6 @@
       scroll-behavior: smooth;
     }
 
-    .floating {
-      animation: float 6s ease-in-out infinite;
-    }
-
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0) rotate(0);
-      }
-
-      50% {
-        transform: translateY(-10px) rotate(1deg);
-      }
-    }
-
     /* Skeleton loader untuk konten */
     .skeleton {
       background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
@@ -183,13 +167,6 @@
       </div>
     </div>
 
-    <!-- Floating illustrations -->
-    <div class="absolute right-10 bottom-20 hidden lg:block z-0 opacity-60 floating">
-      <i class="fas fa-user-graduate text-6xl text-primary-400"></i>
-    </div>
-    <div class="absolute left-10 top-40 hidden lg:block z-0 opacity-60 floating">
-      <i class="fas fa-university text-4xl text-blue-400"></i>
-    </div>
   </section>
 
   <!-- Statistik Cards -->
