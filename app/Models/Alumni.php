@@ -8,6 +8,7 @@ class Alumni extends Model
 {
     use HasFactory;
     
+    protected $table = "alumnis";
     protected $fillable = [
         "nama_lengkap",
         "nim",
@@ -38,7 +39,7 @@ class Alumni extends Model
     // Relasi oneToMany ke model Status
     public function status()
     {
-        return $this->hasMany(Status::class, 'alumni_id');
+        return $this->hasOne(Status::class, 'alumni_id');
     }
     
     // Alias untuk metode status() untuk konsistensi

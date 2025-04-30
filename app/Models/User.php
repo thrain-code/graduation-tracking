@@ -49,7 +49,7 @@ class User extends Authenticatable
     // Relasi oneToOne dari model Alumni
     public function alumni()
     {
-        return $this->hasOne(Alumni::class);
+        return $this->belongsTo(Alumni::class);
     }
 
     // Check if user is admin
