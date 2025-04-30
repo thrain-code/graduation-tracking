@@ -1,11 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LandingPageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('landing-page');
-})->name("landing page");
+Route::get('/', [LandingPageController::class, 'index'])->name('landing.page');
 
 // Auth Route
 Route::get("/login", [AuthController::class, "showLoginForm"])->name("login.form");
