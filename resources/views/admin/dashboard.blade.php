@@ -15,8 +15,7 @@
                 <i class="fas fa-users text-xl"></i>
             </div>
         </div>
-        <p class="text-3xl font-bold text-white mb-1">150</p>
-        <p class="text-slate-400 text-sm">+12 alumni baru bulan ini</p>
+        <p class="text-3xl font-bold text-white mb-1">{{ $totalAlumni }}</p>
     </div>
     
     <!-- Bekerja Card -->
@@ -27,8 +26,7 @@
                 <i class="fas fa-briefcase text-xl"></i>
             </div>
         </div>
-        <p class="text-3xl font-bold text-white mb-1">76%</p>
-        <p class="text-slate-400 text-sm">+5% dibanding tahun lalu</p>
+        <p class="text-3xl font-bold text-white mb-1">{{ $persenBekerja }}%</p>
     </div>
     
     <!-- Studi Lanjut Card -->
@@ -39,8 +37,7 @@
                 <i class="fas fa-graduation-cap text-xl"></i>
             </div>
         </div>
-        <p class="text-3xl font-bold text-white mb-1">24%</p>
-        <p class="text-slate-400 text-sm">+2% dibanding tahun lalu</p>
+        <p class="text-3xl font-bold text-white mb-1">{{ $persenStudiLanjut }}%</p>
     </div>
 </div>
 
@@ -70,9 +67,9 @@
 <!-- User Management Card -->
 <div class="card rounded-xl p-6 shadow-lg mb-6">
     <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold text-white">Kelola Pengguna</h3>
+        <h3 class="text-xl font-semibold text-white">Kelola Admin</h3>
         <button id="openAddUserModal" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center">
-            <i class="fas fa-plus mr-2"></i> Tambah User
+            <i class="fas fa-plus mr-2"></i> Tambah Admin
         </button>
     </div>
     
@@ -82,42 +79,25 @@
                 <tr>
                     <th class="px-4 py-3 rounded-tl-lg">Nama</th>
                     <th class="px-4 py-3">Email</th>
-                    <th class="px-4 py-3">Role</th>
-                    <th class="px-4 py-3">Status</th>
                     <th class="px-4 py-3 rounded-tr-lg text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody class="text-gray-300">
+                @foreach ($admins as $admin)
                 <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                    <td class="px-4 py-3">Admin Utama</td>
-                    <td class="px-4 py-3">admin@example.test</td>
-                    <td class="px-4 py-3"><span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded">Admin</span></td>
-                    <td class="px-4 py-3"><span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">Aktif</span></td>
+                    <td class="px-4 py-3">{{ $admin->name }}</td>
+                    <td class="px-4 py-3">{{ $admin->email }}</td>
                     <td class="px-4 py-3 text-right">
                         <button class="text-blue-400 hover:text-blue-300 mr-3"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                        <form action="{{ route('dashboard.admin.delete', $admin->id) }}" method="post">
+                            @csrf
+                            @method("DELETE")
+                            <button class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                        </form>
                     </td>
                 </tr>
-                <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                    <td class="px-4 py-3">Budi Santoso</td>
-                    <td class="px-4 py-3">budi@example.test</td>
-                    <td class="px-4 py-3"><span class="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded">Alumni</span></td>
-                    <td class="px-4 py-3"><span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">Aktif</span></td>
-                    <td class="px-4 py-3 text-right">
-                        <button class="text-blue-400 hover:text-blue-300 mr-3"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-                <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                    <td class="px-4 py-3">Siti Nurhaliza</td>
-                    <td class="px-4 py-3">siti@example.test</td>
-                    <td class="px-4 py-3"><span class="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded">Alumni</span></td>
-                    <td class="px-4 py-3"><span class="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded">Tidak Aktif</span></td>
-                    <td class="px-4 py-3 text-right">
-                        <button class="text-blue-400 hover:text-blue-300 mr-3"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
+                @endforeach
+                
             </tbody>
         </table>
     </div>
@@ -141,36 +121,30 @@
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>
     <div class="relative top-20 mx-auto max-w-xl bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-700">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-semibold text-white">Tambah User Baru</h3>
+            <h3 class="text-xl font-semibold text-white">Tambah Admin Baru</h3>
             <button id="closeAddUserModal" class="text-gray-400 hover:text-white">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         
-        <form>
+        <form action="{{route('dashboard.admin.add')}}" method="POST">
+            @csrf
             <div class="grid grid-cols-1 gap-4 mb-4">
                 <div>
                     <label class="block text-gray-300 mb-1">Nama</label>
-                    <input type="text" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+                    <input type="text" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="name">
                 </div>
                 
                 <div>
                     <label class="block text-gray-300 mb-1">Email</label>
-                    <input type="email" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+                    <input type="email" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="email">
                 </div>
                 
                 <div>
                     <label class="block text-gray-300 mb-1">Password</label>
-                    <input type="password" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+                    <input type="password" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="password">
                 </div>
                 
-                <div>
-                    <label class="block text-gray-300 mb-1">Role</label>
-                    <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
-                        <option>Admin</option>
-                        <option>Alumni</option>
-                    </select>
-                </div>
             </div>
             
             <div class="flex justify-end">

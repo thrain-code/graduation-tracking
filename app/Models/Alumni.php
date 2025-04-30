@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Alumni extends Model
 {
     use HasFactory;
+    
     protected $fillable = [
         "nama_lengkap",
         "nim",
@@ -17,6 +18,10 @@ class Alumni extends Model
         "user_id",
         "number_phone",
         "alamat"
+    ];
+
+    protected $casts = [
+        'tahun_lulus' => 'integer',
     ];
 
     // Relasi oneToMany dari model Prodi
@@ -31,15 +36,54 @@ class Alumni extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Relasi oneToMany ke model Pekerjaan
-    public function pekerjaans()
+    // Relasi oneToMany ke model Status
+    public function status()
     {
-        return $this->hasMany(Pekerjaan::class);
+        return $this->hasOne(Status::class);
     }
-
-    // Relasi oneToMany ke model PendidikanLanjutan
-    public function pendidikanLanjutans()
+    
+    // Mendapatkan status aktif
+    public function activeStatuses()
     {
-        return $this->hasMany(PendidikanLanjutan::class);
+        return $this->statuses()->where('is_active', true)->get();
+    }
+    
+    // Mendapatkan status aktif berdasarkan tipe
+    public function getActiveStatusByType($type)
+    {
+        return $this->statuses()
+                    ->where('type', $type)
+                    ->where('is_active', true)
+                    ->first();
+    }
+    
+    // Mendapatkan semua status bekerja
+    public function statusBekerja()
+    {
+        return $this->statuses()->where('type', 'bekerja')->get();
+    }
+    
+    // Mendapatkan semua status kuliah
+    public function statusKuliah()
+    {
+        return $this->statuses()->where('type', 'kuliah')->get();
+    }
+    
+    // Cek apakah alumni sedang bekerja
+    public function isBekerja()
+    {
+        return $this->statuses()
+                    ->where('type', 'bekerja')
+                    ->where('is_active', true)
+                    ->exists();
+    }
+    
+    // Cek apakah alumni sedang kuliah
+    public function isKuliah()
+    {
+        return $this->statuses()
+                    ->where('type', 'kuliah')
+                    ->where('is_active', true)
+                    ->exists();
     }
 }

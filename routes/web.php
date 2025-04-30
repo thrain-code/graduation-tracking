@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -21,4 +22,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/prodi', ProdiController::class);
 
     Route::get('/alumni', [AlumniController::class, 'index']);
+
+    // CRUD Admin
+    Route::post('/admin/admins', [AdminController::class, 'store'])->name('dashboard.admin.add');
+    Route::delete('/admin/admins/{id}', [AdminController::class, 'delete'])->name('dashboard.admin.delete');
 });
