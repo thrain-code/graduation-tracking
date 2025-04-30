@@ -1,3 +1,4 @@
+<!-- layouts/admin.blade.php -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -122,27 +123,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pekerjaan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
-                            <i class="fas fa-briefcase w-6"></i>
-                            <span>Pekerjaan</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pendidikan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
-                            <i class="fas fa-graduation-cap w-6"></i>
-                            <span>Pendidikan</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="#" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
-                            <i class="fas fa-user-shield w-6"></i>
-                            <span>Pengguna</span>
                         </a>
                     </li>
                     <li class="pt-4 mt-4 border-t border-slate-800">
@@ -195,27 +178,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pekerjaan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
-                            <i class="fas fa-briefcase w-6"></i>
-                            <span>Pekerjaan</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.pendidikan*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
-                            <i class="fas fa-graduation-cap w-6"></i>
-                            <span>Pendidikan</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="#" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.users*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
-                            <i class="fas fa-user-shield w-6"></i>
-                            <span>Pengguna</span>
                         </a>
                     </li>
                     <li class="pt-4 mt-4 border-t border-slate-800">
@@ -244,8 +209,6 @@
                             <i class="fas fa-bell"></i>
                             <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">3</span>
                         </button>
-                        
-
                     </div>
                 </div>
             </header>
@@ -273,26 +236,11 @@
             </footer>
         </main>
     </div>
+    
+    @yield('modals')
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Profile dropdown toggle
-            const profileDropdown = document.getElementById('profileDropdown');
-            const profileMenu = document.getElementById('profileMenu');
-            
-            if (profileDropdown && profileMenu) {
-                profileDropdown.addEventListener('click', function() {
-                    profileMenu.classList.toggle('hidden');
-                });
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(event) {
-                    if (!profileDropdown.contains(event.target) && !profileMenu.contains(event.target)) {
-                        profileMenu.classList.add('hidden');
-                    }
-                });
-            }
-            
             // Mobile sidebar toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
             const mobileSidebar = document.getElementById('mobileSidebar');
