@@ -123,7 +123,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="{{ route('prodi.index') }}" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
                         </a>

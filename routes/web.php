@@ -9,17 +9,22 @@ use App\Http\Controllers\ProdiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.page');
+Route::get('/get-statistics', [LandingPageController::class, 'getStatistics']);
 
 // Auth Route
-Route::get("/login", [AuthController::class, "showLoginForm"])->name("login.form");
-Route::post("/login", [AuthController::class, "login"])->name("login");
-Route::post("/logout", [AuthController::class, "logout"])->name("logout");
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Prodi
     Route::get('/prodi', [ProdiController::class, 'index'])->name('prodi.index');
+    Route::post('/prodi', [ProdiController::class, 'store'])->name('prodi.store');
+    Route::delete('/prodi/{id}', [ProdiController::class, 'destroy'])->name('prodi.delete');
+    Route::put('/prodi/{id}', [ProdiController::class, 'update'])->name('prodi.update');
+
     // CRUD Admin
     Route::post('/admin/admins', [AdminController::class, 'store'])->name('dashboard.admin.add');
     Route::delete('/admin/admins/{id}', [AdminController::class, 'delete'])->name('dashboard.admin.delete');

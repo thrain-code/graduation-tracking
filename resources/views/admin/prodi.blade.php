@@ -1,4 +1,3 @@
-<!-- resources/views/admin/prodi/index.blade.php -->
 @extends('layouts.admin')
 
 @section('title', 'Program Studi')
@@ -6,6 +5,18 @@
 @section('page-title', 'Program Studi')
 
 @section('content')
+<!-- Flash Messages -->
+@if (session('success'))
+    <div class="bg-green-500/20 text-green-400 p-4 rounded-lg mb-4">
+        {{ session('success') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="bg-red-500/20 text-red-400 p-4 rounded-lg mb-4">
+        {{ session('error') }}
+    </div>
+@endif
+
 <!-- Prodi Card -->
 <div class="card rounded-xl p-6 shadow-lg mb-6">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -18,12 +29,14 @@
     
     <!-- Search Bar -->
     <div class="mb-6">
-        <div class="relative">
-            <input type="text" placeholder="Cari program studi..." class="w-full bg-slate-700 border border-slate-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-primary-500">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="fas fa-search text-gray-400"></i>
+        <form method="GET" action="{{ route('prodi.index') }}">
+            <div class="relative">
+                <input type="text" name="search" placeholder="Cari program studi..." value="{{ request('search') }}" class="w-full bg-slate-700 border border-slate-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-primary-500">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
     
     <!-- Prodi Table -->
@@ -33,67 +46,33 @@
                 <tr>
                     <th class="px-4 py-3 rounded-tl-lg">#</th>
                     <th class="px-4 py-3">Nama Program Studi</th>
-                    <th class="px-4 py-3">Jumlah Alumni</th>
                     <th class="px-4 py-3 rounded-tr-lg text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody class="text-gray-300">
+                @forelse ($prodis as $prodi)
                 <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                    <td class="px-4 py-3">1</td>
-                    <td class="px-4 py-3">PTIK (Pendidikan Teknologi Informasi dan Komputer)</td>
-                    <td class="px-4 py-3">120</td>
+                    <td class="px-4 py-3">{{ $prodis->firstItem() + $loop->index }}</td>
+                    <td class="px-4 py-3">{{ $prodi->prodi_name }}</td>
                     <td class="px-4 py-3 text-right">
-                        <button class="text-blue-400 hover:text-blue-300 mr-2 edit-prodi-btn" data-id="1" data-name="PTIK (Pendidikan Teknologi Informasi dan Komputer)"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300 delete-prodi-btn" data-id="1"><i class="fas fa-trash"></i></button>
+                        <button class="text-blue-400 hover:text-blue-300 mr-2 edit-prodi-btn" data-id="{{ $prodi->id }}" data-name="{{ $prodi->prodi_name }}"><i class="fas fa-edit"></i></button>
+                        <button class="text-red-400 hover:text-red-300 delete-prodi-btn" data-id="{{ $prodi->id }}"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
-                <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                    <td class="px-4 py-3">2</td>
-                    <td class="px-4 py-3">Teknik Sipil</td>
-                    <td class="px-4 py-3">85</td>
-                    <td class="px-4 py-3 text-right">
-                        <button class="text-blue-400 hover:text-blue-300 mr-2 edit-prodi-btn" data-id="2" data-name="Teknik Sipil"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300 delete-prodi-btn" data-id="2"><i class="fas fa-trash"></i></button>
-                    </td>
+                @empty
+                <tr>
+                    <td colspan="3" class="px-4 py-3 text-center text-gray-400">Tidak ada program studi yang ditemukan.</td>
                 </tr>
-                <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                    <td class="px-4 py-3">3</td>
-                    <td class="px-4 py-3">Teknik Mesin</td>
-                    <td class="px-4 py-3">72</td>
-                    <td class="px-4 py-3 text-right">
-                        <button class="text-blue-400 hover:text-blue-300 mr-2 edit-prodi-btn" data-id="3" data-name="Teknik Mesin"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300 delete-prodi-btn" data-id="3"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-                <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                    <td class="px-4 py-3">4</td>
-                    <td class="px-4 py-3">Teknik Elektro</td>
-                    <td class="px-4 py-3">65</td>
-                    <td class="px-4 py-3 text-right">
-                        <button class="text-blue-400 hover:text-blue-300 mr-2 edit-prodi-btn" data-id="4" data-name="Teknik Elektro"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300 delete-prodi-btn" data-id="4"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-                <tr class="hover:bg-slate-800/40">
-                    <td class="px-4 py-3">5</td>
-                    <td class="px-4 py-3">Manajemen Informatika</td>
-                    <td class="px-4 py-3">58</td>
-                    <td class="px-4 py-3 text-right">
-                        <button class="text-blue-400 hover:text-blue-300 mr-2 edit-prodi-btn" data-id="5" data-name="Manajemen Informatika"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300 delete-prodi-btn" data-id="5"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
     
     <!-- Pagination -->
     <div class="flex justify-between items-center mt-4">
-        <p class="text-sm text-gray-400">Menampilkan 5 dari 5 program studi</p>
+        <p class="text-sm text-gray-400">Menampilkan {{ $prodis->count() }} dari {{ $prodis->total() }} program studi</p>
         <div class="flex">
-            <a href="#" class="text-gray-400 hover:text-white px-3 py-1 rounded-lg mr-1 bg-slate-800">Prev</a>
-            <a href="#" class="text-white px-3 py-1 rounded-lg mr-1 bg-primary-600">1</a>
-            <a href="#" class="text-gray-400 hover:text-white px-3 py-1 rounded-lg bg-slate-800">Next</a>
+            {{ $prodis->links('pagination::tailwind') }}
         </div>
     </div>
 </div>
@@ -111,10 +90,14 @@
             </button>
         </div>
         
-        <form>
+        <form action="{{ route('prodi.store') }}" method="POST">
+            @csrf
             <div class="mb-4">
                 <label class="block text-gray-300 mb-1">Nama Program Studi</label>
-                <input type="text" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+                <input type="text" name="prodi_name" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" value="{{ old('prodi_name') }}">
+                @error('prodi_name')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
             
             <div class="flex justify-end">
@@ -140,11 +123,16 @@
             </button>
         </div>
         
-        <form>
-            <input type="hidden" id="edit_prodi_id">
+        <form id="editProdiForm" method="POST">
+            @csrf
+            @method('PUT')
+            <input type="hidden" id="edit_prodi_id" name="id">
             <div class="mb-4">
                 <label class="block text-gray-300 mb-1">Nama Program Studi</label>
-                <input type="text" id="edit_prodi_name" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+                <input type="text" id="edit_prodi_name" name="prodi_name" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+                @error('prodi_name')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
             
             <div class="flex justify-end">
@@ -175,9 +163,13 @@
             <button id="cancelDeleteProdi" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg">
                 Batal
             </button>
-            <button id="confirmDeleteProdi" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
-                Hapus
-            </button>
+            <form id="deleteProdiForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" id="confirmDeleteProdi" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+                    Hapus
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -215,10 +207,11 @@
         const editProdiModal = document.getElementById('editProdiModal');
         const closeEditProdiModal = document.getElementById('closeEditProdiModal');
         const cancelEditProdi = document.getElementById('cancelEditProdi');
+        const editProdiForm = document.getElementById('editProdiForm');
         const editProdiId = document.getElementById('edit_prodi_id');
         const editProdiName = document.getElementById('edit_prodi_name');
         
-        if (editButtons.length > 0 && editProdiModal) {
+        if (editButtons.length > 0 && editProdiModal && editProdiForm) {
             editButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const id = this.getAttribute('data-id');
@@ -226,6 +219,7 @@
                     
                     if (editProdiId) editProdiId.value = id;
                     if (editProdiName) editProdiName.value = name;
+                    editProdiForm.action = `{{ url('prodi') }}/${id}`;
                     
                     editProdiModal.classList.remove('hidden');
                 });
@@ -235,12 +229,14 @@
         if (closeEditProdiModal) {
             closeEditProdiModal.addEventListener('click', function() {
                 editProdiModal.classList.add('hidden');
+                editProdiForm.action = '';
             });
         }
         
         if (cancelEditProdi) {
             cancelEditProdi.addEventListener('click', function() {
                 editProdiModal.classList.add('hidden');
+                editProdiForm.action = '';
             });
         }
         
@@ -248,14 +244,16 @@
         const deleteButtons = document.querySelectorAll('.delete-prodi-btn');
         const deleteProdiModal = document.getElementById('deleteProdiModal');
         const cancelDeleteProdi = document.getElementById('cancelDeleteProdi');
-        const confirmDeleteProdi = document.getElementById('confirmDeleteProdi');
-        let prodiIdToDelete = null;
+        const deleteProdiForm = document.getElementById('deleteProdiForm');
         
-        if (deleteButtons.length > 0 && deleteProdiModal) {
+        if (deleteButtons.length > 0 && deleteProdiModal && deleteProdiForm) {
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    prodiIdToDelete = this.getAttribute('data-id');
-                    deleteProdiModal.classList.remove('hidden');
+                    const prodiId = this.getAttribute('data-id');
+                    if (prodiId) {
+                        deleteProdiForm.action = `{{ url('prodi') }}/${prodiId}`;
+                        deleteProdiModal.classList.remove('hidden');
+                    }
                 });
             });
         }
@@ -263,16 +261,7 @@
         if (cancelDeleteProdi) {
             cancelDeleteProdi.addEventListener('click', function() {
                 deleteProdiModal.classList.add('hidden');
-                prodiIdToDelete = null;
-            });
-        }
-        
-        if (confirmDeleteProdi) {
-            confirmDeleteProdi.addEventListener('click', function() {
-                // Here you would handle the delete action
-                alert('Program studi dengan ID ' + prodiIdToDelete + ' berhasil dihapus!');
-                deleteProdiModal.classList.add('hidden');
-                prodiIdToDelete = null;
+                deleteProdiForm.action = '';
             });
         }
     });
