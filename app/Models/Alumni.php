@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,39 +18,45 @@ class Alumni extends Model
         "number_phone",
         "alamat"
     ];
-
+    
     protected $casts = [
         'tahun_lulus' => 'integer',
     ];
-
+    
     // Relasi oneToMany dari model Prodi
     public function prodi()
     {
         return $this->belongsTo(Prodi::class);
     }
-
+    
     // Relasi oneToOne ke model User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
+    
     // Relasi oneToMany ke model Status
     public function status()
     {
-        return $this->hasOne(Status::class);
+        return $this->hasMany(Status::class, 'alumni_id');
+    }
+    
+    // Alias untuk metode status() untuk konsistensi
+    public function statuses()
+    {
+        return $this->status();
     }
     
     // Mendapatkan status aktif
     public function activeStatuses()
     {
-        return $this->statuses()->where('is_active', true)->get();
+        return $this->status()->where('is_active', true)->get();
     }
     
     // Mendapatkan status aktif berdasarkan tipe
     public function getActiveStatusByType($type)
     {
-        return $this->statuses()
+        return $this->status()
                     ->where('type', $type)
                     ->where('is_active', true)
                     ->first();
@@ -60,19 +65,19 @@ class Alumni extends Model
     // Mendapatkan semua status bekerja
     public function statusBekerja()
     {
-        return $this->statuses()->where('type', 'bekerja')->get();
+        return $this->status()->where('type', 'bekerja')->get();
     }
     
     // Mendapatkan semua status kuliah
     public function statusKuliah()
     {
-        return $this->statuses()->where('type', 'kuliah')->get();
+        return $this->status()->where('type', 'kuliah')->get();
     }
     
     // Cek apakah alumni sedang bekerja
     public function isBekerja()
     {
-        return $this->statuses()
+        return $this->status()
                     ->where('type', 'bekerja')
                     ->where('is_active', true)
                     ->exists();
@@ -81,7 +86,7 @@ class Alumni extends Model
     // Cek apakah alumni sedang kuliah
     public function isKuliah()
     {
-        return $this->statuses()
+        return $this->status()
                     ->where('type', 'kuliah')
                     ->where('is_active', true)
                     ->exists();
