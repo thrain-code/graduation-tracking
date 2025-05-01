@@ -25,17 +25,23 @@ class AlumniController extends Controller
         $status = $request->query('status');
 
         $query = Alumni::with(['prodi', 'user', 'status'])
-            ->when($search, fn($q) => $q->where('nama_lengkap', 'like', "%{$search}%")
-                ->orWhere('nim', 'like', "%{$search}%"))
-            ->when($prodi_id, fn($q) => $q->where('prodi_id', $prodi_id))
-            ->when($tahun_lulus, fn($q) => $q->where('tahun_lulus', $tahun_lulus))
+            ->when($search, function ($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                ->orWhere('nim', 'like', "%{$search}%");
+            })
+            ->when($prodi_id, function ($q) use ($prodi_id) {
+                $q->where('prodi_id', $prodi_id);
+            })
+            ->when($tahun_lulus, function ($q) use ($tahun_lulus) {
+                $q->where('tahun_lulus', $tahun_lulus);
+            })
             ->when($status, function ($q) use ($status) {
-                if ($status === 'bekerja') {
-                    $q->whereHas('status', fn($q) => $q->bekerja()->active());
-                } elseif ($status === 'studi') {
-                    $q->whereHas('status', fn($q) => $q->kuliah()->active());
-                } elseif ($status === 'belum') {
+                if ($status === 'belum') {
                     $q->whereDoesntHave('status');
+                } else {
+                    $q->whereHas('status', function ($q) use ($status) {
+                        $q->where('type', $status)->where('is_active', true);
+                    });
                 }
             });
 
@@ -50,17 +56,22 @@ class AlumniController extends Controller
         return view('admin.alumni.index', compact('alumnis', 'prodis', 'tahun_lulus_options'));
     }
 
+
     public function create()
     {
         $prodis = Prodi::all();
         return view('admin.alumni.add', compact('prodis'));
     }
 
+
     public function store(Request $request)
     {
+        // Debugging, hapus setelah yakin data masuk dengan benar
+        // dd($request->all());
+
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nim' => 'required|string|unique:alumnis,nim|max:20',
+            'nim' => 'required|string|unique:alumnis,nim|max:20', 
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'tahun_lulus' => 'required|integer|min:1900|max:' . date('Y'),
             'prodi_id' => 'required|exists:prodis,id',
@@ -68,12 +79,19 @@ class AlumniController extends Controller
             'password' => 'required|string|min:8',
             'number_phone' => 'required|string|max:15',
             'alamat' => 'required|string|max:500',
-            'status_type' => 'nullable|in:bekerja,kuliah',
-            'status_nama' => 'required_if:status_type,bekerja,kuliah|string|max:255',
-            'jabatan' => 'required_if:status_type,bekerja|string|max:255',
-            'jenjang' => 'required_if:status_type,kuliah|string|max:255',
+            'status_type' => 'nullable|in:bekerja,kuliah,wirausaha,mengurus keluarga',
+            // Validasi ketat: hanya relevan dengan status_type
+            'bekerja_status_nama' => 'required_if:status_type,bekerja|string|max:100',
+            'kuliah_status_nama' => 'required_if:status_type,kuliah|string|max:100',
+            'wirausaha_status_nama' => 'required_if:status_type,wirausaha|string|max:100',
+            'jabatan' => 'required_if:status_type,bekerja|string|max:50',
+            'jenjang' => 'required_if:status_type,kuliah|in:S1,S2,S3',
+            'bekerja_jenis_pekerjaan' => 'required_if:status_type,bekerja|string|max:255',
+            'wirausaha_jenis_pekerjaan' => 'required_if:status_type,wirausaha|string|max:255',
             'gaji' => 'nullable|integer|min:0',
-            'tahun_mulai' => 'required_if:status_type,bekerja,kuliah|integer|min:1900|max:' . date('Y'),
+            'bekerja_tahun_mulai' => 'required_if:status_type,bekerja|integer|min:1900|max:' . date('Y'),
+            'kuliah_tahun_mulai' => 'required_if:status_type,kuliah|integer|min:1900|max:' . date('Y'),
+            'wirausaha_tahun_mulai' => 'required_if:status_type,wirausaha|integer|min:1900|max:' . date('Y'),
         ]);
 
         // Create User
@@ -96,18 +114,31 @@ class AlumniController extends Controller
             'alamat' => $validated['alamat'],
         ]);
 
-        // Create Status if provided
-        if ($validated['status_type']) {
-            Status::create([
-                'nama' => $validated['status_nama'],
+        // Create Status if status_type is provided
+        if ($validated['status_type'] && $validated['status_type'] !== 'mengurus keluarga') {
+            $statusData = [
                 'type' => $validated['status_type'],
                 'alumni_id' => $alumni->id,
-                'jabatan' => $validated['jabatan'] ?? null,
-                'jenjang' => $validated['jenjang'] ?? null,
                 'gaji' => $validated['gaji'] ?? null,
-                'tahun_mulai' => $validated['tahun_mulai'],
                 'is_active' => true,
-            ]);
+            ];
+
+            if ($validated['status_type'] === 'bekerja') {
+                $statusData['nama'] = $validated['bekerja_status_nama'];
+                $statusData['jenis_pekerjaan'] = $validated['bekerja_jenis_pekerjaan'];
+                $statusData['jabatan'] = $validated['jabatan'];
+                $statusData['tahun_mulai'] = $validated['bekerja_tahun_mulai'];
+            } elseif ($validated['status_type'] === 'kuliah') {
+                $statusData['nama'] = $validated['kuliah_status_nama'];
+                $statusData['jenjang'] = $validated['jenjang'];
+                $statusData['tahun_mulai'] = $validated['kuliah_tahun_mulai'];
+            } elseif ($validated['status_type'] === 'wirausaha') {
+                $statusData['nama'] = $validated['wirausaha_status_nama'];
+                $statusData['jenis_pekerjaan'] = $validated['wirausaha_jenis_pekerjaan'];
+                $statusData['tahun_mulai'] = $validated['wirausaha_tahun_mulai'];
+            }
+
+            Status::create($statusData);
         }
 
         return redirect()->route('alumni.index')->with('success', 'Berhasil menambahkan alumni');
@@ -129,23 +160,32 @@ class AlumniController extends Controller
     public function update(Request $request, $id)
     {
         $alumni = Alumni::findOrFail($id);
+        // dd($request->all());
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nim' => 'required|string|max:20|unique:alumnis,nim,' . $id,
+            'nim' => 'required|string|max:20|unique:alumnis,nim,' . $id, 
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'tahun_lulus' => 'required|integer|min:1900|max:' . date('Y'),
             'prodi_id' => 'required|exists:prodis,id',
             'email' => 'required|email|max:255|unique:users,email,' . $alumni->user_id,
             'number_phone' => 'required|string|max:15',
             'alamat' => 'required|string|max:500',
-            'status_type' => 'nullable|in:bekerja,kuliah',
-            'status_nama' => 'required_if:status_type,bekerja,kuliah|string|max:255',
-            'jabatan' => 'required_if:status_type,bekerja|string|max:255',
-            'jenjang' => 'required_if:status_type,kuliah|string|max:255',
+            'status_type' => 'nullable|in:bekerja,kuliah,wirausaha,mengurus keluarga',
+            // Validasi ketat: hanya relevan dengan status_type
+            'bekerja_status_nama' => 'required_if:status_type,bekerja|string|max:100',
+            'kuliah_status_nama' => 'required_if:status_type,kuliah|string|max:100',
+            'wirausaha_status_nama' => 'required_if:status_type,wirausaha|string|max:100',
+            'jabatan' => 'required_if:status_type,bekerja|string|max:50',
+            'jenjang' => 'required_if:status_type,kuliah|in:S1,S2,S3',
+            'bekerja_jenis_pekerjaan' => 'required_if:status_type,bekerja|string|max:255',
+            'wirausaha_jenis_pekerjaan' => 'required_if:status_type,wirausaha|string|max:255',
             'gaji' => 'nullable|integer|min:0',
-            'tahun_mulai' => 'required_if:status_type,bekerja,kuliah|integer|min:1900|max:' . date('Y'),
+            'bekerja_tahun_mulai' => 'required_if:status_type,bekerja|integer|min:1900|max:' . date('Y'),
+            'kuliah_tahun_mulai' => 'required_if:status_type,kuliah|integer|min:1900|max:' . date('Y'),
+            'wirausaha_tahun_mulai' => 'required_if:status_type,wirausaha|integer|min:1900|max:' . date('Y'),
         ]);
+        // dd($request->jenjang);
 
         // Update User
         $alumni->user->update([
@@ -165,18 +205,31 @@ class AlumniController extends Controller
         ]);
 
         // Update or Create Status
-        if ($validated['status_type']) {
+        if ($validated['status_type'] && $validated['status_type'] !== 'mengurus keluarga') {
+            $statusData = [
+                'type' => $validated['status_type'],
+                'gaji' => $validated['gaji'] ?? null,
+                'is_active' => true,
+            ];
+
+            if ($validated['status_type'] === 'bekerja') {
+                $statusData['nama'] = $validated['bekerja_status_nama'];
+                $statusData['jenis_pekerjaan'] = $validated['bekerja_jenis_pekerjaan'];
+                $statusData['jabatan'] = $validated['jabatan'];
+                $statusData['tahun_mulai'] = $validated['bekerja_tahun_mulai'];
+            } elseif ($validated['status_type'] === 'kuliah') {
+                $statusData['nama'] = $validated['kuliah_status_nama'];
+                $statusData['jenjang'] = $validated['jenjang'];
+                $statusData['tahun_mulai'] = $validated['kuliah_tahun_mulai'];
+            } elseif ($validated['status_type'] === 'wirausaha') {
+                $statusData['nama'] = $validated['wirausaha_status_nama'];
+                $statusData['jenis_pekerjaan'] = $validated['wirausaha_jenis_pekerjaan'];
+                $statusData['tahun_mulai'] = $validated['wirausaha_tahun_mulai'];
+            }
+
             $alumni->status()->updateOrCreate(
                 ['alumni_id' => $alumni->id],
-                [
-                    'nama' => $validated['status_nama'],
-                    'type' => $validated['status_type'],
-                    'jabatan' => $validated['jabatan'] ?? null,
-                    'jenjang' => $validated['jenjang'] ?? null,
-                    'gaji' => $validated['gaji'] ?? null,
-                    'tahun_mulai' => $validated['tahun_mulai'],
-                    'is_active' => true,
-                ]
+                $statusData
             );
         } else {
             $alumni->status()->delete();
@@ -184,6 +237,7 @@ class AlumniController extends Controller
 
         return redirect()->route('alumni.index')->with('success', 'Berhasil memperbarui alumni');
     }
+
 
     public function destroy($id)
     {

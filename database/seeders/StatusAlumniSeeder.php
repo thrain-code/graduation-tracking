@@ -1,32 +1,31 @@
 <?php
-
 namespace Database\Seeders;
 
 use App\Models\Alumni;
 use App\Models\Status;
-use App\Models\StatusAlumni;
 use Illuminate\Database\Seeder;
-use Faker\Factory as Faker;
 
 class StatusAlumniSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create('id_ID');
+        $alumnis = Alumni::all();
 
-        Alumni::all()->each(function ($alumni) use ($faker) {
-            $type = $faker->randomElement(['kuliah', 'bekerja']);
+        // Status yang akan dibagikan merata
+        $statusTypes = ['bekerja', 'kuliah', 'wirausaha', 'mengurus keluarga'];
+        $typeIndex = 0;
 
-            Status::create([
-                'alumni_id' => $alumni->id,
-                'type' => $type,
-                'jenjang' => $type === 'kuliah' ? 'S2' : null,
-                'nama' => $type === 'kuliah'
-                    ? $faker->randomElement(['UI', 'UGM', 'ITB', 'IPB'])
-                    : $faker->company(),
-                'tahun_mulai' => $faker->numberBetween(2019, 2024),
-                'created_at' => now(),
-            ]);
-        });
+        foreach ($alumnis as $index => $alumni) {
+            // 70% kemungkinan alumni memiliki status
+            if (rand(1, 100) <= 70) {
+                $type = $statusTypes[$typeIndex % count($statusTypes)];
+                Status::factory()
+                    ->{$type}() // pakai state method dari factory
+                    ->create([
+                        'alumni_id' => $alumni->id,
+                    ]);
+                $typeIndex++; // pindah ke type selanjutnya untuk distribusi merata
+            }
+        }
     }
 }

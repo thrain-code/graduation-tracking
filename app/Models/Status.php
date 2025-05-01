@@ -18,6 +18,7 @@ class Status extends Model
         "alumni_id",
         "jenis_pekerjaan",
         "jabatan",
+        "jenjang",
         "gaji",
         "tahun_mulai",
         "is_active"

@@ -30,7 +30,6 @@
             </div>
         </div>
 
-
         <div class="flex flex-wrap gap-3 mb-6">
             <a href="{{ route('alumni.import.form') }}"
                 class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center">
@@ -61,19 +60,15 @@
                             @if(request()->has('search'))
                                 <input type="hidden" name="search" value="{{ request('search') }}">
                             @endif
-
                             @if(request()->has('prodi_id'))
                                 <input type="hidden" name="prodi_id" value="{{ request('prodi_id') }}">
                             @endif
-
                             @if(request()->has('tahun_lulus'))
                                 <input type="hidden" name="tahun_lulus" value="{{ request('tahun_lulus') }}">
                             @endif
-
                             @if(request()->has('status'))
                                 <input type="hidden" name="status" value="{{ request('status') }}">
                             @endif
-
                             <button type="submit"
                                 class="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white">
                                 Export Data Terfilter
@@ -89,7 +84,7 @@
             <div class="flex-1">
                 <form method="GET" action="{{ route('alumni.index') }}">
                     <div class="relative">
-                        <input type="text" name="search" placeholder="Cari alumni..." value="{{ request('search') }}"
+                        <input type="text" name="search" placeholder="Cari nama atau NIM alumni..." value="{{ request('search') }}"
                             class="w-full bg-slate-700 border border-slate-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-primary-500">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400"></i>
@@ -120,8 +115,7 @@
                         onchange="this.form.submit()">
                         <option value="">Semua Tahun Lulus</option>
                         @foreach ($tahun_lulus_options as $tahun)
-                            <option value="{{ $tahun }}" {{ request('tahun_lulus') == $tahun ? 'selected' : '' }}>{{ $tahun }}
-                            </option>
+                            <option value="{{ $tahun }}" {{ request('tahun_lulus') == $tahun ? 'selected' : '' }}>{{ $tahun }}</option>
                         @endforeach
                     </select>
                 </form>
@@ -135,7 +129,9 @@
                         onchange="this.form.submit()">
                         <option value="">Semua Status</option>
                         <option value="bekerja" {{ request('status') == 'bekerja' ? 'selected' : '' }}>Bekerja</option>
-                        <option value="studi" {{ request('status') == 'studi' ? 'selected' : '' }}>Studi Lanjut</option>
+                        <option value="kuliah" {{ request('status') == 'kuliah' ? 'selected' : '' }}>Studi Lanjut</option>
+                        <option value="wirausaha" {{ request('status') == 'wirausaha' ? 'selected' : '' }}>Wirausaha</option>
+                        <option value="mengurus keluarga" {{ request('status') == 'mengurus keluarga' ? 'selected' : '' }}>Mengurus Keluarga</option>
                         <option value="belum" {{ request('status') == 'belum' ? 'selected' : '' }}>Belum Terdata</option>
                     </select>
                 </form>
@@ -161,18 +157,28 @@
                 <tbody class="text-gray-300">
                     @forelse ($alumnis as $alumni)
                         <tr class="border-b border-slate-700 hover:bg-slate-800/40">
-                            <td class="px-4 py-3">{{ $alumni->nama_lengkap }}</td>
-                            <td class="px-4 py-3">{{ $alumni->nim }}</td>
-                            <td class="px-4 py-3">{{ ucfirst($alumni->jenis_kelamin) }}</td>
-                            <td class="px-4 py-3">{{ $alumni->tahun_lulus }}</td>
+                            <td class="px-4 py-3">{{ $alumni->nama_lengkap ?? 'N/A' }}</td>
+                            <td class="px-4 py-3">{{ $alumni->nim ?? 'N/A' }}</td>
+                            <td class="px-4 py-3">{{ $alumni->jenis_kelamin ? ucfirst($alumni->jenis_kelamin) : 'N/A' }}</td>
+                            <td class="px-4 py-3">{{ $alumni->tahun_lulus ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $alumni->prodi->prodi_name ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $alumni->user->email ?? 'N/A' }}</td>
-                            <td class="px-4 py-3">{{ $alumni->number_phone }}</td>
+                            <td class="px-4 py-3">{{ $alumni->number_phone ?? 'N/A' }}</td>
                             <td class="px-4 py-3">
-                                @if ($alumni->status && $alumni->status->is_active)
-                                    <span
-                                        class="text-xs px-2 py-1 rounded {{ $alumni->status->isBekerja() ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400' }}">
-                                        {{ $alumni->status->isBekerja() ? 'Bekerja' : 'Studi Lanjut' }}
+                                @if ($alumni->status && $alumni->status->type)
+                                    <span class="text-xs px-2 py-1 rounded capitalize
+                                        @if ($alumni->status->type === 'bekerja')
+                                            bg-green-500/20 text-green-400
+                                        @elseif ($alumni->status->type === 'kuliah')
+                                            bg-purple-500/20 text-purple-400
+                                        @elseif ($alumni->status->type === 'wirausaha')
+                                            bg-blue-500/20 text-blue-400
+                                        @elseif ($alumni->status->type === 'mengurus keluarga')
+                                            bg-yellow-500/20 text-yellow-400
+                                        @else
+                                            bg-gray-500/20 text-gray-400
+                                        @endif">
+                                        {{ str_replace('_', ' ', $alumni->status->type) }}
                                     </span>
                                 @else
                                     <span class="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded">Belum Terdata</span>

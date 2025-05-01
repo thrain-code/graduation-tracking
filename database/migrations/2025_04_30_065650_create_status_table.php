@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('status', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('nama')->nullable();
             $table->enum('type', ['kuliah', 'bekerja', "wirausaha", "mengurus keluarga"]);
             $table->foreignId("alumni_id")->constrained()->onDelete("cascade");
             $table->string('jabatan')->nullable();
