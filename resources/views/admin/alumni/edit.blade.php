@@ -200,13 +200,7 @@
                         <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-                <div>
-                    <label class="block text-gray-300 mb-1">Jenis Pekerjaan</label>
-                    <input type="text" name="wirausaha_jenis_pekerjaan" value="{{ old('wirausaha_jenis_pekerjaan', $alumni->status ? $alumni->status->jenis_pekerjaan : '') }}" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
-                    @error('wirausaha_jenis_pekerjaan')
-                        <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+
                 <div>
                     <label class="block text-gray-300 mb-1">Gaji/Pendapatan</label>
                     <input type="number" name="gaji" value="{{ old('gaji', $alumni->status ? $alumni->status->gaji : '') }}" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
