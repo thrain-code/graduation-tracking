@@ -20,6 +20,6 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             // ProdiSeeder::class,
         ]);
-        Status::factory()->count(500)->create();
+        Status::factory()->count(75)->create();
     }
 }

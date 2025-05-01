@@ -67,7 +67,7 @@ class AlumniController extends Controller
     public function store(Request $request)
     {
         // Debugging, hapus setelah yakin data masuk dengan benar
-        // dd($request->all());
+        dd($request->all());
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
