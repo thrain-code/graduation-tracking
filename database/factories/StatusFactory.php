@@ -25,7 +25,7 @@ class StatusFactory extends Factory
         $gaji = null;
         $jenis_pekerjaan = null;
         if($type == "wirausaha"){
-            $jenis_pekerjaan = $this->faker->word();
+            // $jenis_pekerjaan = $this->faker->word();
             $gaji = $this->faker->numberBetween(3000000, 20000000);  // Misal gaji antara 3 juta sampai 20 juta
         }
 

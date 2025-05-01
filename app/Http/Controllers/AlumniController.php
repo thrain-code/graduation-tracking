@@ -67,7 +67,7 @@ class AlumniController extends Controller
     public function store(Request $request)
     {
         // Debugging, hapus setelah yakin data masuk dengan benar
-        dd($request->all());
+        // dd($request->all());
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
@@ -87,7 +87,7 @@ class AlumniController extends Controller
             'jabatan' => 'required_if:status_type,bekerja|string|max:50',
             'jenjang' => 'required_if:status_type,kuliah|in:S1,S2,S3',
             'bekerja_jenis_pekerjaan' => 'required_if:status_type,bekerja|string|max:255',
-            'wirausaha_jenis_pekerjaan' => 'required_if:status_type,wirausaha|string|max:255',
+            'wirausaha_jenis_pekerjaan' => 'nullable|string|max:255',
             'gaji' => 'nullable|integer|min:0',
             'bekerja_tahun_mulai' => 'required_if:status_type,bekerja|integer|min:1900|max:' . date('Y'),
             'kuliah_tahun_mulai' => 'required_if:status_type,kuliah|integer|min:1900|max:' . date('Y'),
@@ -134,7 +134,7 @@ class AlumniController extends Controller
                 $statusData['tahun_mulai'] = $validated['kuliah_tahun_mulai'];
             } elseif ($validated['status_type'] === 'wirausaha') {
                 $statusData['nama'] = $validated['wirausaha_status_nama'];
-                $statusData['jenis_pekerjaan'] = $validated['wirausaha_jenis_pekerjaan'];
+                $statusData['jenis_pekerjaan'] = null;
                 $statusData['tahun_mulai'] = $validated['wirausaha_tahun_mulai'];
             }
 
@@ -179,7 +179,7 @@ class AlumniController extends Controller
             'jabatan' => 'required_if:status_type,bekerja|string|max:50',
             'jenjang' => 'required_if:status_type,kuliah|in:S1,S2,S3',
             'bekerja_jenis_pekerjaan' => 'required_if:status_type,bekerja|string|max:255',
-            'wirausaha_jenis_pekerjaan' => 'required_if:status_type,wirausaha|string|max:255',
+            'wirausaha_jenis_pekerjaan' => 'nullable|string|max:255',
             'gaji' => 'nullable|integer|min:0',
             'bekerja_tahun_mulai' => 'required_if:status_type,bekerja|integer|min:1900|max:' . date('Y'),
             'kuliah_tahun_mulai' => 'required_if:status_type,kuliah|integer|min:1900|max:' . date('Y'),
@@ -223,7 +223,7 @@ class AlumniController extends Controller
                 $statusData['tahun_mulai'] = $validated['kuliah_tahun_mulai'];
             } elseif ($validated['status_type'] === 'wirausaha') {
                 $statusData['nama'] = $validated['wirausaha_status_nama'];
-                $statusData['jenis_pekerjaan'] = $validated['wirausaha_jenis_pekerjaan'];
+                $statusData['jenis_pekerjaan'] = null;
                 $statusData['tahun_mulai'] = $validated['wirausaha_tahun_mulai'];
             }
 
