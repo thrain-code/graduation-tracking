@@ -115,6 +115,9 @@
             <a href="#tren"
               class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Tren
               Alumni</a>
+            <a href="#jenis-pekerjaan"
+              class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Jenis
+              Pekerjaan</a>
           </div>
         </div>
         <div class="-mr-2 flex md:hidden">
@@ -132,6 +135,7 @@
         <a href="#beranda" class="text-white block px-3 py-2 rounded-md text-base font-medium">Beranda</a>
         <a href="#statistik" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Statistik</a>
         <a href="#tren" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Tren Alumni</a>
+        <a href="#jenis-pekerjaan" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Jenis Pekerjaan</a>
       </div>
     </div>
   </nav>
@@ -186,7 +190,7 @@
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div
           class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
           <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-green-500/20 text-green-400 mb-4">
@@ -214,6 +218,34 @@
             <div class="bg-blue-400 h-full rounded-full" style="width: {{ $stats['studi_lanjut_percent'] }}%"></div>
           </div>
         </div>
+
+        <div
+          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-orange-500/20 text-orange-400 mb-4">
+            <i class="fas fa-store text-3xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-orange-400 mb-1">{{ $stats['wirausaha_percent'] }}%</h3>
+          <p class="text-slate-300 mb-3 font-medium">Wirausaha</p>
+          <p class="text-slate-400 text-sm">Menjalankan usaha sendiri atau berwirausaha setelah lulus.
+          </p>
+          <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
+            <div class="bg-orange-400 h-full rounded-full" style="width: {{ $stats['wirausaha_percent'] }}%"></div>
+          </div>
+        </div>
+
+        <div
+          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-purple-500/20 text-purple-400 mb-4">
+            <i class="fas fa-home text-3xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-purple-400 mb-1">{{ $stats['mengurus_keluarga_percent'] }}%</h3>
+          <p class="text-slate-300 mb-3 font-medium">Mengurus Keluarga</p>
+          <p class="text-slate-400 text-sm">Memilih untuk fokus mengurus keluarga setelah lulus.
+          </p>
+          <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
+            <div class="bg-purple-400 h-full rounded-full" style="width: {{ $stats['mengurus_keluarga_percent'] }}%"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Pie Chart Section -->
@@ -221,10 +253,10 @@
         <div class="md:col-span-1 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
           <h3 class="text-xl font-bold text-white mb-4 text-center">Distribusi Status Alumni</h3>
           <div class="relative">
-            <canvas id="statusPieChart" class="max-w-full mx-auto" height="250"></canvas>
+            <canvas id="statusPieChart" class="max-w-full mx-auto" height="280"></canvas>
             
             <!-- Fallback message when no data is available -->
-            @if(count($alumni) == 0 || ($stats['bekerja_count'] + $stats['studi_lanjut_count'] == 0))
+            @if(count($alumni) == 0 || ($stats['bekerja_count'] + $stats['studi_lanjut_count'] + $stats['wirausaha_count'] + $stats['mengurus_keluarga_count'] == 0))
             <div class="absolute inset-0 flex items-center justify-center">
               <div class="text-slate-400 text-center">
                 <i class="fas fa-chart-pie text-3xl mb-3 opacity-30"></i>
@@ -238,10 +270,10 @@
         <div class="md:col-span-2 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
           <h3 class="text-xl font-bold text-white mb-4">Informasi Tambahan</h3>
           
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
-                <span class="text-purple-400 text-2xl font-bold">{{ count($alumni) }}</span>
+                <span class="text-primary-400 text-2xl font-bold">{{ count($alumni) }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Total Alumni</p>
             </div>
@@ -255,20 +287,34 @@
             
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
-                @php
-                  $currentYear = date('Y');
-                  $recentGrads = $alumni->where('tahun_lulus', '>=', $currentYear - 1)->count();
-                @endphp
-                <span class="text-orange-400 text-2xl font-bold">{{ $recentGrads }}</span>
+                <span class="text-blue-400 text-2xl font-bold">{{ $stats['studi_lanjut_count'] }}</span>
               </div>
-              <p class="text-slate-300 text-center text-sm">Lulusan 1 Tahun Terakhir</p>
+              <p class="text-slate-300 text-center text-sm">Alumni Studi Lanjut</p>
             </div>
             
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
-                <span class="text-blue-400 text-2xl font-bold">{{ $stats['studi_lanjut_count'] }}</span>
+                <span class="text-orange-400 text-2xl font-bold">{{ $stats['wirausaha_count'] }}</span>
               </div>
-              <p class="text-slate-300 text-center text-sm">Alumni Studi Lanjut</p>
+              <p class="text-slate-300 text-center text-sm">Alumni Wirausaha</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-purple-400 text-2xl font-bold">{{ $stats['mengurus_keluarga_count'] }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Mengurus Keluarga</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                @php
+                  $currentYear = date('Y');
+                  $recentGrads = $alumni->where('tahun_lulus', '>=', $currentYear - 1)->count();
+                @endphp
+                <span class="text-yellow-400 text-2xl font-bold">{{ $recentGrads }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Lulusan 1 Tahun Terakhir</p>
             </div>
           </div>
         </div>
@@ -317,6 +363,61 @@
     </div>
   </section>
 
+  <!-- Jenis Pekerjaan Section -->
+  <section id="jenis-pekerjaan" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto mb-14 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">Distribusi Jenis Pekerjaan</h2>
+      <p class="text-slate-300 max-w-2xl mx-auto">
+        @if(count($alumni) > 0 && isset($stats['job_type_distribution']) && count($stats['job_type_distribution']) > 0)
+        Sebaran jenis pekerjaan alumni yang bekerja dan berwirausaha menunjukkan keberagaman karir dan bisnis yang dijalani lulusan Institut Prima Bangsa.
+        @else
+        Belum ada data distribusi jenis pekerjaan yang tersedia saat ini.
+        @endif
+      </p>
+    </div>
+
+    <div
+      class="max-w-5xl mx-auto bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-slate-700/30">
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="md:col-span-3">
+          <div class="relative h-[450px]">
+            @if(count($alumni) > 0 && isset($stats['job_type_distribution']) && count($stats['job_type_distribution']) > 0)
+            <canvas id="jobTypeChart" class="max-w-full h-full mx-auto"></canvas>
+            @else
+            <div class="flex items-center justify-center h-full">
+              <div class="text-slate-400 text-center">
+                <i class="fas fa-chart-bar text-4xl mb-4 opacity-30"></i>
+                <p>Belum ada data untuk ditampilkan</p>
+              </div>
+            </div>
+            @endif
+            
+            <div id="jobChartLoader"
+              class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
+              <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="md:col-span-1">
+          <h3 class="text-xl font-bold text-white mb-4">Keterangan</h3>
+          <div class="bg-slate-800/50 rounded-lg p-4 mb-4">
+            <p class="text-slate-200 text-sm">
+              Setiap warna menunjukkan jenis pekerjaan yang berbeda. Hover pada batang untuk melihat detail.
+            </p>
+          </div>
+          
+          <div class="bg-slate-800/50 rounded-lg p-4 mt-4">
+            <h4 class="text-white font-medium mb-2">Tentang Visualisasi</h4>
+            <p class="text-slate-300 text-sm">
+              Diagram menampilkan distribusi jenis pekerjaan alumni berdasarkan data terbaru. Panjang bar menunjukkan jumlah alumni di setiap jenis pekerjaan.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="py-10 bg-slate-900 border-t border-slate-800">
     <div class="max-w-6xl mx-auto px-6">
@@ -335,6 +436,7 @@
               <li><a href="#beranda" class="text-slate-400 hover:text-white">Beranda</a></li>
               <li><a href="#statistik" class="text-slate-400 hover:text-white">Statistik</a></li>
               <li><a href="#tren" class="text-slate-400 hover:text-white">Tren Alumni</a></li>
+              <li><a href="#jenis-pekerjaan" class="text-slate-400 hover:text-white">Jenis Pekerjaan</a></li>
             </ul>
           </div>
           <div>
@@ -479,35 +581,47 @@
 
     // Charts
     document.addEventListener('DOMContentLoaded', function () {
-      // Hide chart loader after charts are initialized
+      // Hide chart loaders after charts are initialized
       setTimeout(() => {
         const chartLoader = document.getElementById('chartLoader');
+        const jobChartLoader = document.getElementById('jobChartLoader');
+        
         if (chartLoader) {
           chartLoader.style.display = 'none';
         }
+        
+        if (jobChartLoader) {
+          jobChartLoader.style.display = 'none';
+        }
       }, 1000);
 
-      @if(count($alumni) > 0 && ($stats['bekerja_count'] + $stats['studi_lanjut_count'] > 0))
+      @if(count($alumni) > 0 && ($stats['bekerja_count'] + $stats['studi_lanjut_count'] + $stats['wirausaha_count'] + $stats['mengurus_keluarga_count'] > 0))
       // Status Pie Chart
       const statusPieChartCtx = document.getElementById('statusPieChart');
       if (statusPieChartCtx) {
         // Get percentages
         const bekerjaPercent = {{ $stats['bekerja_percent'] }};
         const studiLanjutPercent = {{ $stats['studi_lanjut_percent'] }};
+        const wirausahaPercent = {{ $stats['wirausaha_percent'] }};
+        const mengurusKeluargaPercent = {{ $stats['mengurus_keluarga_percent'] }};
         
         const statusPieChart = new Chart(statusPieChartCtx, {
           type: 'doughnut',
           data: {
-            labels: ['Bekerja', 'Lanjut Studi'],
+            labels: ['Bekerja', 'Lanjut Studi', 'Wirausaha', 'Mengurus Keluarga'],
             datasets: [{
-              data: [bekerjaPercent, studiLanjutPercent],
+              data: [bekerjaPercent, studiLanjutPercent, wirausahaPercent, mengurusKeluargaPercent],
               backgroundColor: [
                 'rgba(34, 197, 94, 0.8)',  // Green for working
-                'rgba(59, 130, 246, 0.8)'  // Blue for studying
+                'rgba(59, 130, 246, 0.8)',  // Blue for studying
+                'rgba(249, 115, 22, 0.8)',  // Orange for entrepreneurship
+                'rgba(139, 92, 246, 0.8)'   // Purple for family management
               ],
               borderColor: [
                 'rgba(34, 197, 94, 1)',
-                'rgba(59, 130, 246, 1)'
+                'rgba(59, 130, 246, 1)',
+                'rgba(249, 115, 22, 1)',
+                'rgba(139, 92, 246, 1)'
               ],
               borderWidth: 1
             }]
@@ -568,6 +682,8 @@
         // Siapkan data untuk chart
         const bekerjaData = years.map(year => yearlyData[year]?.bekerja_percent || 0);
         const studiData = years.map(year => yearlyData[year]?.studi_lanjut_percent || 0);
+        const wirausahaData = years.map(year => yearlyData[year]?.wirausaha_percent || 0);
+        const mengurusKeluargaData = years.map(year => yearlyData[year]?.mengurus_keluarga_percent || 0);
 
         const alumniChart = new Chart(alumniChartCtx, {
           type: 'line',
@@ -587,6 +703,22 @@
                 data: studiData,
                 borderColor: '#3B82F6',
                 backgroundColor: 'rgba(59,130,246,0.1)',
+                tension: 0.4,
+                fill: true
+              },
+              {
+                label: 'Wirausaha',
+                data: wirausahaData,
+                borderColor: '#F97316',
+                backgroundColor: 'rgba(249,115,22,0.1)',
+                tension: 0.4,
+                fill: true
+              },
+              {
+                label: 'Mengurus Keluarga',
+                data: mengurusKeluargaData,
+                borderColor: '#8B5CF6',
+                backgroundColor: 'rgba(139,92,246,0.1)',
                 tension: 0.4,
                 fill: true
               }
@@ -701,11 +833,154 @@
                   backgroundColor: 'rgba(59,130,246,0.1)',
                   tension: 0.4,
                   fill: true
+                },
+                {
+                  label: 'Wirausaha',
+                  data: wirausahaData,
+                  borderColor: '#F97316',
+                  backgroundColor: 'rgba(249,115,22,0.1)',
+                  tension: 0.4,
+                  fill: true
+                },
+                {
+                  label: 'Mengurus Keluarga',
+                  data: mengurusKeluargaData,
+                  borderColor: '#8B5CF6',
+                  backgroundColor: 'rgba(139,92,246,0.1)',
+                  tension: 0.4,
+                  fill: true
                 }
               ];
             } 
             alumniChart.update();
           });
+        });
+      }
+      @endif
+
+      @if(count($alumni) > 0 && isset($stats['job_type_distribution']) && count($stats['job_type_distribution']) > 0)
+      // Job Type Chart
+      const jobTypeChartCtx = document.getElementById('jobTypeChart');
+      if (jobTypeChartCtx) {
+        // Get job type data from controller
+        const jobTypeData = @json($stats['job_type_distribution'] ?? []);
+        
+        // Get all job types
+        const allJobTypes = Object.keys(jobTypeData);
+        const jobTypeCounts = allJobTypes.map(type => jobTypeData[type].count);
+        
+        // Create an array of vibrant colors for each job type
+        const colorPalette = [
+          'rgba(34, 197, 94, 0.8)',   // green
+          'rgba(249, 115, 22, 0.8)',  // orange
+          'rgba(59, 130, 246, 0.8)',  // blue
+          'rgba(139, 92, 246, 0.8)',  // purple
+          'rgba(236, 72, 153, 0.8)',  // pink
+          'rgba(234, 179, 8, 0.8)',   // yellow
+          'rgba(16, 185, 129, 0.8)',  // emerald
+          'rgba(6, 182, 212, 0.8)',   // cyan
+          'rgba(99, 102, 241, 0.8)',  // indigo
+          'rgba(244, 63, 94, 0.8)',   // rose
+          'rgba(168, 85, 247, 0.8)',  // fuchsia
+          'rgba(20, 184, 166, 0.8)',  // teal
+          'rgba(245, 158, 11, 0.8)',  // amber
+          'rgba(8, 145, 178, 0.8)',   // sky
+          'rgba(217, 70, 239, 0.8)',  // violet
+        ];
+        
+        // Assign colors to each job type
+        const backgroundColors = allJobTypes.map((_, index) => {
+          return colorPalette[index % colorPalette.length];
+        });
+        
+        const borderColors = backgroundColors.map(color => {
+          return color.replace('0.8', '1');
+        });
+        
+        const jobTypeChart = new Chart(jobTypeChartCtx, {
+          type: 'bar',  // Horizontal bar chart
+          data: {
+            labels: allJobTypes,
+            datasets: [{
+              label: 'Jumlah Alumni',
+              data: jobTypeCounts,
+              backgroundColor: backgroundColors,
+              borderColor: borderColors,
+              borderWidth: 1,
+              borderRadius: 4,
+            }]
+          },
+          options: {
+            indexAxis: 'y',  // Horizontal bars
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#cbd5e1',
+                padding: 12,
+                cornerRadius: 8,
+                borderColor: 'rgba(148, 163, 184, 0.2)',
+                borderWidth: 1,
+                callbacks: {
+                  label: function(context) {
+                    const count = context.raw;
+                    return `Jumlah: ${count} alumni`;
+                  },
+                  title: function(context) {
+                    return context[0].label;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                ticks: {
+                  color: '#fff',
+                  font: {
+                    size: 11
+                  },
+                  padding: 10
+                },
+                grid: {
+                  display: false
+                }
+              },
+              x: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0,
+                  color: '#94a3b8',
+                  font: {
+                    size: 11
+                  }
+                },
+                grid: {
+                  color: 'rgba(148, 163, 184, 0.1)',
+                },
+                title: {
+                  display: true,
+                  text: 'Jumlah Alumni',
+                  color: '#cbd5e1',
+                  font: {
+                    size: 12
+                  }
+                }
+              }
+            },
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 0,
+                bottom: 10
+              }
+            }
+          }
         });
       }
       @endif

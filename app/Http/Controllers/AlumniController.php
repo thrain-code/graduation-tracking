@@ -27,7 +27,7 @@ class AlumniController extends Controller
         $query = Alumni::with(['prodi', 'user', 'status'])
             ->when($search, function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
-                ->orWhere('nim', 'like', "%{$search}%");
+                    ->orWhere('nim', 'like', "%{$search}%");
             })
             ->when($prodi_id, function ($q) use ($prodi_id) {
                 $q->where('prodi_id', $prodi_id);
@@ -71,7 +71,7 @@ class AlumniController extends Controller
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nim' => 'required|string|unique:alumnis,nim|max:20', 
+            'nim' => 'required|string|unique:alumnis,nim|max:20',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'tahun_lulus' => 'required|integer|min:1900|max:' . date('Y'),
             'prodi_id' => 'required|exists:prodis,id',
@@ -164,7 +164,7 @@ class AlumniController extends Controller
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nim' => 'required|string|max:20|unique:alumnis,nim,' . $id, 
+            'nim' => 'required|string|max:20|unique:alumnis,nim,' . $id,
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'tahun_lulus' => 'required|integer|min:1900|max:' . date('Y'),
             'prodi_id' => 'required|exists:prodis,id',
@@ -255,65 +255,159 @@ class AlumniController extends Controller
     }
 
     /**
+     * Export alumni data to Excel
+     */
+    public function export(Request $request)
+    {
+        // Set a custom filename with the current date/time
+        $currentDate = date('Y-m-d_His');
+
+        // Generate the filename based on filters
+        $fileName = 'data_alumni';
+
+        // Add filter info to filename if any filters are applied
+        if ($request->has('prodi_id') && $request->prodi_id) {
+            $prodi = Prodi::find($request->prodi_id);
+            if ($prodi) {
+                $fileName .= '_' . Str::slug($prodi->prodi_name);
+            }
+        }
+
+        if ($request->has('tahun_lulus') && $request->tahun_lulus) {
+            $fileName .= '_' . $request->tahun_lulus;
+        }
+
+        if ($request->has('status') && $request->status) {
+            $fileName .= '_' . $request->status;
+        }
+
+        // Add date and extension
+        $fileName .= '_' . $currentDate . '.xlsx';
+
+        // Log the export activity for auditing
+        Log::info('Alumni data export initiated by: ' . auth()->user()->name . ' with filters: ' . json_encode($request->all()));
+
+        // Return the Excel download with the custom filename
+        return Excel::download(new AlumniExport($request), $fileName);
+    }
+
+    /**
      * Show the form for importing alumni
      */
     public function importForm()
     {
-        return view('admin.alumni.import');
+        $prodis = Prodi::all();
+        return view('admin.alumni.import', compact('prodis'));
     }
-    
-    /**
-     * Process the import file
-     */
-    public function importProcess(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv',
-        ]);
-        
-        try {
-            DB::beginTransaction();
-            
-            $import = new AlumniImport();
-            Excel::import($import, $request->file('file'));
-            
-            $rowsImported = count($import->rows());
-            $failures = $import->failures();
-            
-            DB::commit();
-            
-            if (count($failures) > 0) {
-                return redirect()->route('alumni.import.form')->with([
-                    'warning' => 'Import selesai dengan beberapa error. ' . count($failures) . ' data gagal diimpor.',
-                    'failures' => $failures,
-                    'success' => 'Berhasil mengimpor ' . ($rowsImported - count($failures)) . ' data alumni.'
-                ]);
-            }
-            
-            return redirect()->route('alumni.index')->with('success', 'Berhasil mengimpor ' . $rowsImported . ' data alumni.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Import Error: ' . $e->getMessage());
-            
-            return redirect()->route('alumni.import.form')
-                ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
-        }
-    }
-    
+
     /**
      * Download template for import
      */
     public function downloadTemplate()
     {
-        return Excel::download(new ImportTemplateExport, 'template_import_alumni.xlsx');
+        return Excel::download(new ImportTemplateExport, 'template_import_alumni_' . date('Y-m-d') . '.xlsx');
     }
-    
+
     /**
-     * Export alumni data to Excel
+     * Process the import file with enhanced error handling and validation
      */
-    public function export(Request $request)
+    public function importProcess(Request $request)
     {
-        $fileName = 'data_alumni_' . date('Y-m-d_His') . '.xlsx';
-        return Excel::download(new AlumniExport($request), $fileName);
+        // Validate the uploaded file
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // Limit to 10MB
+        ], [
+            'file.required' => 'File import wajib diunggah',
+            'file.file' => 'Data harus berupa file',
+            'file.mimes' => 'Format file harus xlsx, xls, atau csv',
+            'file.max' => 'Ukuran file maksimal 10MB',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('alumni.import.form')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            // Start a database transaction
+            DB::beginTransaction();
+
+            // Initialize the import class
+            $import = new AlumniImport();
+
+            // Store the original file name for logging
+            $originalFileName = $request->file('file')->getClientOriginalName();
+
+            // Import the file with chained configurations
+            Excel::import($import, $request->file('file'));
+
+            // Get import statistics
+            $rowsImported = $import->getImportedCount();
+            $failures = $import->failures();
+
+            // Commit the transaction if we reach this point
+            DB::commit();
+
+            // Log the successful import
+            Log::info('Alumni import completed by: ' . auth()->user()->name . ' - File: ' . $originalFileName . ' - Imported: ' . $rowsImported . ' - Failed: ' . count($failures));
+
+            // Determine the redirect based on failures
+            if (count($failures) > 0) {
+                // Group failures by row and reason for better display
+                $groupedFailures = [];
+                foreach ($failures as $failure) {
+                    $row = $failure->row();
+                    if (!isset($groupedFailures[$row])) {
+                        $groupedFailures[$row] = [
+                            'row' => $row,
+                            'errors' => [],
+                            'values' => $failure->values()
+                        ];
+                    }
+                    $groupedFailures[$row]['errors'][$failure->attribute()] = $failure->errors()[0];
+                }
+
+                return redirect()->route('alumni.import.form')->with([
+                    'warning' => 'Import selesai dengan beberapa error. ' . count($failures) . ' data gagal diimpor.',
+                    'failures' => $groupedFailures,
+                    'success' => 'Berhasil mengimpor ' . $rowsImported . ' data alumni.',
+                    'import_summary' => [
+                        'total_rows' => count($import->rows()),
+                        'imported' => $rowsImported,
+                        'failed' => count($failures),
+                        'date' => now()->format('d M Y H:i:s')
+                    ]
+                ]);
+            }
+
+            // No failures, redirect with success message
+            return redirect()->route('alumni.index')->with([
+                'success' => 'Berhasil mengimpor ' . $rowsImported . ' data alumni.',
+                'import_summary' => [
+                    'total_rows' => count($import->rows()),
+                    'imported' => $rowsImported,
+                    'failed' => 0,
+                    'date' => now()->format('d M Y H:i:s')
+                ]
+            ]);
+
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            // Handle validation exception
+            DB::rollBack();
+            Log::error('Import Validation Error: ' . $e->getMessage());
+
+            return redirect()->route('alumni.import.form')
+                ->with('error', 'Terjadi kesalahan validasi saat mengimpor data. Silakan periksa format file Anda.')
+                ->with('validation_failures', $e->failures());
+
+        } catch (\Exception $e) {
+            // Handle any other exceptions
+            DB::rollBack();
+            Log::error('Import Error: ' . $e->getMessage());
+
+            return redirect()->route('alumni.import.form')
+                ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
+        }
     }
 }
