@@ -215,6 +215,64 @@
           </div>
         </div>
       </div>
+
+      <!-- Pie Chart Section -->
+      <div class="mt-12 grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
+          <h3 class="text-xl font-bold text-white mb-4 text-center">Distribusi Status Alumni</h3>
+          <div class="relative">
+            <canvas id="statusPieChart" class="max-w-full mx-auto" height="250"></canvas>
+            
+            <!-- Fallback message when no data is available -->
+            @if(count($alumni) == 0 || ($stats['bekerja_count'] + $stats['studi_lanjut_count'] == 0))
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="text-slate-400 text-center">
+                <i class="fas fa-chart-pie text-3xl mb-3 opacity-30"></i>
+                <p>Belum ada data</p>
+              </div>
+            </div>
+            @endif
+          </div>
+        </div>
+        
+        <div class="md:col-span-2 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
+          <h3 class="text-xl font-bold text-white mb-4">Informasi Tambahan</h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-purple-400 text-2xl font-bold">{{ count($alumni) }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Total Alumni</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-green-400 text-2xl font-bold">{{ $stats['bekerja_count'] }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Alumni Bekerja</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                @php
+                  $currentYear = date('Y');
+                  $recentGrads = $alumni->where('tahun_lulus', '>=', $currentYear - 1)->count();
+                @endphp
+                <span class="text-orange-400 text-2xl font-bold">{{ $recentGrads }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Lulusan 1 Tahun Terakhir</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-blue-400 text-2xl font-bold">{{ $stats['studi_lanjut_count'] }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Alumni Studi Lanjut</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -429,6 +487,74 @@
         }
       }, 1000);
 
+      @if(count($alumni) > 0 && ($stats['bekerja_count'] + $stats['studi_lanjut_count'] > 0))
+      // Status Pie Chart
+      const statusPieChartCtx = document.getElementById('statusPieChart');
+      if (statusPieChartCtx) {
+        // Get percentages
+        const bekerjaPercent = {{ $stats['bekerja_percent'] }};
+        const studiLanjutPercent = {{ $stats['studi_lanjut_percent'] }};
+        
+        const statusPieChart = new Chart(statusPieChartCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Bekerja', 'Lanjut Studi'],
+            datasets: [{
+              data: [bekerjaPercent, studiLanjutPercent],
+              backgroundColor: [
+                'rgba(34, 197, 94, 0.8)',  // Green for working
+                'rgba(59, 130, 246, 0.8)'  // Blue for studying
+              ],
+              borderColor: [
+                'rgba(34, 197, 94, 1)',
+                'rgba(59, 130, 246, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#fff',
+                  usePointStyle: true,
+                  padding: 15,
+                  font: {
+                    size: 11
+                  }
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#cbd5e1',
+                padding: 10,
+                borderColor: 'rgba(148, 163, 184, 0.2)',
+                borderWidth: 1,
+                displayColors: true,
+                usePointStyle: true,
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    return `${label}: ${value.toFixed(1)}%`;
+                  }
+                }
+              }
+            },
+            cutout: '60%',
+            animation: {
+              animateScale: true,
+              animateRotate: true
+            }
+          }
+        });
+      }
+      @endif
+
       @if(count($alumni) > 0)
       // Alumni Chart
       const alumniChartCtx = document.getElementById('alumniChart');
@@ -442,7 +568,6 @@
         // Siapkan data untuk chart
         const bekerjaData = years.map(year => yearlyData[year]?.bekerja_percent || 0);
         const studiData = years.map(year => yearlyData[year]?.studi_lanjut_percent || 0);
-        const mencariKerjaData = years.map(year => yearlyData[year]?.mencari_kerja_percent || 0);
 
         const alumniChart = new Chart(alumniChartCtx, {
           type: 'line',

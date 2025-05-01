@@ -52,9 +52,17 @@ class LandingPageController extends Controller
                                  ->distinct('alumni_id')
                                  ->count('alumni_id');
         
-        // Calculate percentages
-        $bekerjaPercent = $totalAlumni > 0 ? round(($bekerjaCount / $totalAlumni) * 100, 1) : 0;
-        $studiLanjutPercent = $totalAlumni > 0 ? round(($studiLanjutCount / $totalAlumni) * 100, 1) : 0;
+        // Calculate percentages based on alumni with status only 
+        // (we won't show alumni without status in the visualization)
+        $alumniWithStatus = $bekerjaCount + $studiLanjutCount;
+        
+        $bekerjaPercent = $alumniWithStatus > 0 
+            ? round(($bekerjaCount / $alumniWithStatus) * 100, 1) 
+            : 0;
+            
+        $studiLanjutPercent = $alumniWithStatus > 0 
+            ? round(($studiLanjutCount / $alumniWithStatus) * 100, 1) 
+            : 0;
         
         // Create yearly data for chart - using direct queries instead of relationships
         $yearlyData = [];
@@ -75,9 +83,7 @@ class LandingPageController extends Controller
                     'bekerja' => 0,
                     'bekerja_percent' => 0,
                     'studi_lanjut' => 0,
-                    'studi_lanjut_percent' => 0,
-                    'mencari_kerja' => 0,
-                    'mencari_kerja_percent' => 0
+                    'studi_lanjut_percent' => 0
                 ];
                 continue;
             }
@@ -99,11 +105,17 @@ class LandingPageController extends Controller
                                       ->distinct('alumni_id')
                                       ->count('alumni_id');
             
-            // Calculate percentages
-            $bekerjaPercentInYear = $totalInYear > 0 ? round(($bekerjaInYear / $totalInYear) * 100, 1) : 0;
-            $studiPercentInYear = $totalInYear > 0 ? round(($studiLanjutInYear / $totalInYear) * 100, 1) : 0;
-            $mencariKerjaInYear = $totalInYear - $bekerjaInYear - $studiLanjutInYear;
-            $mencariKerjaPercentInYear = 100 - $bekerjaPercentInYear - $studiPercentInYear;
+            // Calculate the number of alumni with status
+            $alumniWithStatusInYear = $bekerjaInYear + $studiLanjutInYear;
+            
+            // Calculate percentages based on alumni with status
+            if ($alumniWithStatusInYear > 0) {
+                $bekerjaPercentInYear = round(($bekerjaInYear / $alumniWithStatusInYear) * 100, 1);
+                $studiPercentInYear = round(($studiLanjutInYear / $alumniWithStatusInYear) * 100, 1);
+            } else {
+                $bekerjaPercentInYear = 0;
+                $studiPercentInYear = 0;
+            }
             
             // Store data for this year
             $yearlyData[$year] = [
@@ -111,9 +123,7 @@ class LandingPageController extends Controller
                 'bekerja' => $bekerjaInYear,
                 'bekerja_percent' => $bekerjaPercentInYear,
                 'studi_lanjut' => $studiLanjutInYear,
-                'studi_lanjut_percent' => $studiPercentInYear,
-                'mencari_kerja' => $mencariKerjaInYear,
-                'mencari_kerja_percent' => $mencariKerjaPercentInYear
+                'studi_lanjut_percent' => $studiPercentInYear
             ];
         }
         
@@ -127,6 +137,7 @@ class LandingPageController extends Controller
         
         return [
             'total_alumni' => $totalAlumni,
+            'total_with_status' => $alumniWithStatus,
             'bekerja_count' => $bekerjaCount,
             'bekerja_percent' => $bekerjaPercent,
             'studi_lanjut_count' => $studiLanjutCount,
@@ -148,14 +159,13 @@ class LandingPageController extends Controller
                 'bekerja' => 0,
                 'bekerja_percent' => 0,
                 'studi_lanjut' => 0,
-                'studi_lanjut_percent' => 0,
-                'mencari_kerja' => 0,
-                'mencari_kerja_percent' => 0
+                'studi_lanjut_percent' => 0
             ];
         }
         
         return [
             'total_alumni' => 0,
+            'total_with_status' => 0,
             'bekerja_count' => 0,
             'bekerja_percent' => 0,
             'studi_lanjut_count' => 0,

@@ -1,4 +1,3 @@
-<!-- layouts/admin.blade.php -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -37,12 +36,18 @@
         }
     </script>
     
+    <!-- Alpine.js for dropdowns -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <!-- Custom Styles -->
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: #0f172a;
             color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         .sidebar {
@@ -95,17 +100,44 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255,255,255,0.3);
         }
+        
+        /* Alert popup styles */
+        .alert-popup {
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Main content wrapper to push footer down */
+        .content-wrapper {
+            flex: 1;
+        }
     </style>
     
     @stack('styles')
 </head>
 <body>
+    <!-- Alerts Container -->
+    <div id="alertsContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full"></div>
+
+    <!-- Alert Templates (hidden) -->
+    <template id="alertTemplate">
+        <div class="alert-popup bg-opacity-90 shadow-lg rounded-lg p-4 transform translate-x-full transition-all duration-300 flex items-center">
+            <i class="alert-icon mr-3 text-lg"></i>
+            <div class="flex-1 pr-3">
+                <p class="alert-message font-medium"></p>
+            </div>
+            <button class="close-alert text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </template>
+
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="sidebar fixed w-64 h-full overflow-y-auto p-4 hidden lg:block">
             <div class="flex items-center mb-8">
                 <i class="fas fa-university text-3xl text-primary-500 mr-3"></i>
-                <span class="text-white font-bold text-xl">Admin PTIK</span>
+                <span class="text-white font-bold text-xl">Admin</span>
             </div>
             
             <nav>
@@ -117,13 +149,13 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('alumni.index') }}" class="sidebar-link {{ request()->routeIs('admin.alumni*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="{{ route('alumni.index') }}" class="sidebar-link {{ request()->routeIs('alumni.*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-users w-6"></i>
                             <span>Alumni</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('prodi.index') }}" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="{{ route('prodi.index') }}" class="sidebar-link {{ request()->routeIs('prodi.*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
                         </a>
@@ -156,7 +188,7 @@
             <div class="flex items-center justify-between mb-8">
                 <div class="flex items-center">
                     <i class="fas fa-university text-3xl text-primary-500 mr-3"></i>
-                    <span class="text-white font-bold text-xl">Admin PTIK</span>
+                    <span class="text-white font-bold text-xl">Admin</span>
                 </div>
                 <button id="closeSidebar" class="text-white p-2">
                     <i class="fas fa-times"></i>
@@ -172,13 +204,13 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('alumni.index') }}" class="sidebar-link {{ request()->routeIs('admin.alumni*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="{{ route('alumni.index') }}" class="sidebar-link {{ request()->routeIs('alumni.*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-users w-6"></i>
                             <span>Alumni</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('prodi.index') }}" class="sidebar-link {{ request()->routeIs('admin.prodi*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                        <a href="{{ route('prodi.index') }}" class="sidebar-link {{ request()->routeIs('prodi.*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
                         </a>
@@ -197,39 +229,21 @@
         </aside>
         
         <!-- Main Content -->
-        <main class="flex-1 ml-0 lg:ml-64 min-h-screen">
+        <main class="flex-1 ml-0 lg:ml-64 min-h-screen flex flex-col">
             <!-- Header -->
             <header class="bg-slate-800 p-4 shadow-md sticky top-0 z-10">
                 <div class="flex justify-between items-center">
                     <h1 class="text-xl font-bold text-white">@yield('page-title', 'Dashboard')</h1>
-                    
-                    <div class="flex items-center">
-                        <!-- Notifications -->
-                        <button class="relative p-2 text-slate-300 hover:text-white mr-4">
-                            <i class="fas fa-bell"></i>
-                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">3</span>
-                        </button>
-                    </div>
                 </div>
             </header>
             
-            <!-- Alert Success -->
-            @if(session('success'))
-            <div class="bg-green-500/20 text-green-400 px-4 py-3 m-4 rounded-lg">
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle mr-2"></i>
-                    <p>{{ session('success') }}</p>
-                </div>
-            </div>
-            @endif
-            
             <!-- Content -->
-            <div class="p-4 md:p-6">
+            <div class="p-4 md:p-6 flex-grow">
                 @yield('content')
             </div>
             
             <!-- Footer -->
-            <footer class="bg-slate-800 p-6 mt-6">
+            <footer class="bg-slate-800 p-6 mt-auto">
                 <div class="text-center text-slate-500 text-sm">
                     &copy; {{ date('Y') }} Institut Prima Bangsa - Sistem Pelacakan Alumni PTIK
                 </div>
@@ -263,6 +277,97 @@
                 closeSidebar.addEventListener('click', hideSidebar);
                 sidebarOverlay.addEventListener('click', hideSidebar);
             }
+
+            // Alert system
+            const alertTypes = {
+                success: {
+                    bgClass: 'bg-green-900',
+                    iconClass: 'fas fa-check-circle text-green-400'
+                },
+                error: {
+                    bgClass: 'bg-red-900',
+                    iconClass: 'fas fa-exclamation-circle text-red-400'
+                },
+                warning: {
+                    bgClass: 'bg-yellow-900',
+                    iconClass: 'fas fa-exclamation-triangle text-yellow-400'
+                },
+                info: {
+                    bgClass: 'bg-blue-900',
+                    iconClass: 'fas fa-info-circle text-blue-400'
+                }
+            };
+
+            const alertsContainer = document.getElementById('alertsContainer');
+            const alertTemplate = document.getElementById('alertTemplate');
+
+            // Function to show an alert
+            function showAlert(message, type = 'info', duration = 5000) {
+                // Create alert from template
+                const alert = alertTemplate.content.cloneNode(true).querySelector('.alert-popup');
+                
+                // Set alert type styling
+                const alertConfig = alertTypes[type] || alertTypes.info;
+                alert.classList.add(alertConfig.bgClass);
+                alert.querySelector('.alert-icon').className = `alert-icon mr-3 text-lg ${alertConfig.iconClass}`;
+                
+                // Set message
+                alert.querySelector('.alert-message').textContent = message;
+                
+                // Add to container
+                alertsContainer.appendChild(alert);
+                
+                // Fade in animation (small delay to ensure DOM is updated)
+                setTimeout(() => {
+                    alert.classList.remove('translate-x-full');
+                }, 10);
+                
+                // Set up auto-dismiss
+                const dismissTimeout = setTimeout(() => {
+                    dismissAlert(alert);
+                }, duration);
+                
+                // Store the timeout ID with the alert
+                alert.dataset.timeoutId = dismissTimeout;
+                
+                // Set up manual close button
+                alert.querySelector('.close-alert').addEventListener('click', function() {
+                    clearTimeout(parseInt(alert.dataset.timeoutId));
+                    dismissAlert(alert);
+                });
+                
+                return alert;
+            }
+            
+            // Function to dismiss an alert
+            function dismissAlert(alert) {
+                alert.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => {
+                    if (alert.parentNode === alertsContainer) {
+                        alertsContainer.removeChild(alert);
+                    }
+                }, 300); // Match the transition duration
+            }
+            
+            // Show any Laravel flash messages as alerts
+            @if(session('success'))
+                showAlert("{{ session('success') }}", 'success');
+            @endif
+            
+            @if(session('error'))
+                showAlert("{{ session('error') }}", 'error');
+            @endif
+            
+            @if(session('warning'))
+                showAlert("{{ session('warning') }}", 'warning');
+            @endif
+            
+            @if(session('info'))
+                showAlert("{{ session('info') }}", 'info');
+            @endif
+            
+            // Make the alert function available globally
+            window.showAlert = showAlert;
         });
     </script>
     

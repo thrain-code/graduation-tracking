@@ -41,29 +41,6 @@
     </div>
 </div>
 
-<!-- Quick Actions Card -->
-<div class="card rounded-xl p-6 shadow-lg mb-6">
-    <h3 class="text-xl font-semibold text-white mb-6">Aksi Cepat</h3>
-    
-    <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
-        
-        <a href="#" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex flex-col items-center justify-center transition duration-300">
-            <div class="w-12 h-12 rounded-full bg-green-600/20 text-green-400 flex items-center justify-center mb-3">
-                <i class="fas fa-file-import text-xl"></i>
-            </div>
-            <span class="text-white text-sm font-medium">Import Data</span>
-        </a>
-        
-        <a href="#" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-lg flex flex-col items-center justify-center transition duration-300">
-            <div class="w-12 h-12 rounded-full bg-amber-600/20 text-amber-400 flex items-center justify-center mb-3">
-                <i class="fas fa-file-export text-xl"></i>
-            </div>
-            <span class="text-white text-sm font-medium">Export Data</span>
-        </a>
-        
-    </div>
-</div>
-
 <!-- User Management Card -->
 <div class="card rounded-xl p-6 shadow-lg mb-6">
     <div class="flex justify-between items-center mb-6">

@@ -6,8 +6,14 @@ use App\Models\Alumni;
 use App\Models\Prodi;
 use App\Models\Status;
 use App\Models\User;
+use App\Exports\AlumniExport;
+use App\Exports\ImportTemplateExport;
+use App\Imports\AlumniImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AlumniController extends Controller
 {
@@ -194,13 +200,66 @@ class AlumniController extends Controller
         return redirect()->route('alumni.index')->with('success', 'Berhasil menghapus alumni');
     }
 
-    public function import(Request $request)
+    /**
+     * Show the form for importing alumni
+     */
+    public function importForm()
     {
-        return redirect()->route('alumni.index')->with('success', 'Fitur import belum diimplementasikan');
+        return view('admin.alumni.import');
     }
-
+    
+    /**
+     * Process the import file
+     */
+    public function importProcess(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+        
+        try {
+            DB::beginTransaction();
+            
+            $import = new AlumniImport();
+            Excel::import($import, $request->file('file'));
+            
+            $rowsImported = count($import->rows());
+            $failures = $import->failures();
+            
+            DB::commit();
+            
+            if (count($failures) > 0) {
+                return redirect()->route('alumni.import.form')->with([
+                    'warning' => 'Import selesai dengan beberapa error. ' . count($failures) . ' data gagal diimpor.',
+                    'failures' => $failures,
+                    'success' => 'Berhasil mengimpor ' . ($rowsImported - count($failures)) . ' data alumni.'
+                ]);
+            }
+            
+            return redirect()->route('alumni.index')->with('success', 'Berhasil mengimpor ' . $rowsImported . ' data alumni.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Import Error: ' . $e->getMessage());
+            
+            return redirect()->route('alumni.import.form')
+                ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Download template for import
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new ImportTemplateExport, 'template_import_alumni.xlsx');
+    }
+    
+    /**
+     * Export alumni data to Excel
+     */
     public function export(Request $request)
     {
-        return redirect()->route('alumni.index')->with('success', 'Fitur export belum diimplementasikan');
+        $fileName = 'data_alumni_' . date('Y-m-d_His') . '.xlsx';
+        return Excel::download(new AlumniExport($request), $fileName);
     }
 }
