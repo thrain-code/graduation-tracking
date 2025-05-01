@@ -21,9 +21,13 @@ class StatusFactory extends Factory
         $type = $this->faker->randomElement(["kuliah", "bekerja", "wirausaha", "mengurus keluarga"]);
 
         // Tentukan jenis pekerjaan, jabatan, dan gaji jika type-nya bekerja
-        $jenis_pekerjaan = null;
         $jabatan = null;
         $gaji = null;
+        $jenis_pekerjaan = null;
+        if($type == "wirausaha"){
+            $jenis_pekerjaan = $this->faker->word();
+            $gaji = $this->faker->numberBetween(3000000, 20000000);  // Misal gaji antara 3 juta sampai 20 juta
+        }
 
         if ($type === 'bekerja') {
             // Daftar pekerjaan untuk tipe "bekerja"
