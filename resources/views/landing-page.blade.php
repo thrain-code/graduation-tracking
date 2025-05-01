@@ -1,766 +1,990 @@
-@extends('layouts.main')
+<!DOCTYPE html>
+<html lang="id">
 
-@section('title', 'Portal Alumni PTIK - Institut Prima Bangsa')
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Statistik Alumni - Institut Prima Bangsa</title>
 
-@section('styles')
-<style>
-    .gradient-text {
-        background: linear-gradient(90deg, #0ea5e9, #6366f1);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+  <!-- Font untuk meningkatkan performa -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Font Icons dengan preload untuk kecepatan -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Memuat Chart.js dengan versi yang stabil -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+  <!-- Load tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+          },
+        },
+      },
     }
-    
-    .feature-icon {
-        background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
-        border-radius: 12px;
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 16px;
-        transition: all 0.3s;
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc;
+      scroll-behavior: smooth;
     }
-    
-    .card-hover:hover .feature-icon {
-        transform: scale(1.05);
+
+    /* Skeleton loader untuk konten */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
     }
-    
-    .btn-gradient {
-        background: linear-gradient(90deg, #0ea5e9, #2563eb);
-        transition: all 0.3s;
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+
+      100% {
+        background-position: 200% 0;
+      }
     }
-    
-    .btn-gradient:hover {
-        background: linear-gradient(90deg, #0284c7, #1e40af);
-        transform: translateY(-2px);
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
     }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0) rotate(0); }
-        50% { transform: translateY(-20px) rotate(5deg); }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
     }
-    
-    .floating {
-        animation: float 8s ease-in-out infinite;
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
     }
-    
-    /* Animated particles */
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Particle background */
     .particle {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
     }
-</style>
-@endsection
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="fixed top-0 left-0 w-full backdrop-blur-lg bg-slate-900/80 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex-shrink-0">
+          <a href="#" class="flex items-center">
+            <img src="{{ asset('assets/logo.ico') }}" alt="Institut Prima Bangsa Logo" class="h-10 w-auto mr-3">
+            <span class="text-white font-bold text-xl">Institut Prima Bangsa</span>
+          </a>
+        </div>
+        <div class="hidden md:block">
+          <div class="flex items-baseline space-x-4">
+            <a href="#beranda"
+              class="text-white hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Beranda</a>
+            <a href="#statistik"
+              class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Statistik</a>
+            <a href="#tren"
+              class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Tren
+              Alumni</a>
+            <a href="#jenis-pekerjaan"
+              class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Jenis
+              Pekerjaan</a>
+          </div>
+        </div>
+        <div class="-mr-2 flex md:hidden">
+          <button id="mobileMenuButton" type="button"
+            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+            <i class="fas fa-bars h-6 w-6"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
-@section('content')
-    <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 backdrop-blur-lg bg-slate-900/80 border-b border-slate-800/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="#" class="flex items-center">
-                        <i class="fas fa-graduation-cap text-2xl text-primary-500 mr-3"></i>
-                        <span class="text-white font-bold text-xl">PTIK Alumni</span>
-                    </a>
-                    <div class="hidden md:ml-8 md:flex md:space-x-6">
-                        <a href="#features" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fitur</a>
-                        <a href="#testimonials" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Testimoni</a>
-                        <a href="#statistics" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Statistik</a>
-                        <a href="#faq" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">FAQ</a>
-                        <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Data Alumni</a>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <a href="#" class="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <i class="fas fa-sign-in-alt mr-2"></i> Login
-                    </a>
-                    <a href="#" class="hidden md:ml-3 md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <i class="fas fa-user-plus mr-2"></i> Register
-                    </a>
-                    <button type="button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-800 focus:outline-none" id="mobile-menu-button">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Mobile menu, show/hide based on menu state. -->
-        <div class="md:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#features" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fitur</a>
-                <a href="#testimonials" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Testimoni</a>
-                <a href="#statistics" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Statistik</a>
-                <a href="#faq" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">FAQ</a>
-                <a href="#" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Data Alumni</a>
-                <div class="pt-4 pb-3 border-t border-gray-700">
-                    <div class="flex items-center px-5">
-                        <a href="#" class="w-full block text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                            <i class="fas fa-sign-in-alt mr-2"></i> Login
-                        </a>
-                    </div>
-                    <div class="mt-3 px-5">
-                        <a href="#" class="w-full block text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                            <i class="fas fa-user-plus mr-2"></i> Register
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div id="mobileMenu" class="hidden md:hidden">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <a href="#beranda" class="text-white block px-3 py-2 rounded-md text-base font-medium">Beranda</a>
+        <a href="#statistik" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Statistik</a>
+        <a href="#tren" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Tren Alumni</a>
+        <a href="#jenis-pekerjaan" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Jenis Pekerjaan</a>
+      </div>
+    </div>
+  </nav>
 
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 px-4 sm:px-6 lg:px-8">
-        <!-- Background Effects -->
-        <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/50 to-slate-900 z-0"></div>
-            <div id="particles-container" class="absolute inset-0 z-0"></div>
-        </div>
-        
-        <div class="container mx-auto max-w-7xl z-10 pt-20 pb-24">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div data-aos="fade-right">
-                    <h5 class="text-primary-400 font-semibold tracking-widest mb-2 flex items-center">
-                        <span class="bg-primary-400/20 rounded-full w-2 h-2 mr-2"></span>
-                        PORTAL ALUMNI PTIK 
-                        <span class="bg-primary-400/20 rounded-full w-2 h-2 ml-2"></span>
-                    </h5>
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
-                        Terhubung & <span class="gradient-text">Berkembang</span> Bersama
-                    </h1>
-                    <p class="text-slate-300 text-lg md:text-xl mb-8 leading-relaxed">
-                        Platform digital untuk menghubungkan alumni PTIK Institut Prima Bangsa. Jalin networking, akses informasi karir, dan ikuti perkembangan sesama alumni.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#" class="btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg inline-flex items-center justify-center">
-                            <i class="fas fa-sign-in-alt mr-2"></i> Masuk Portal
-                        </a>
-                        <a href="#" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-xl inline-flex items-center justify-center border border-white/10">
-                            <i class="fas fa-chart-line mr-2"></i> Lihat Statistik
-                        </a>
-                    </div>
-                    <div class="mt-10 flex items-center">
-                        <div class="flex -space-x-2">
-                            <img src="https://randomuser.me/api/portraits/women/32.jpg" class="w-10 h-10 rounded-full border-2 border-white" alt="User">
-                            <img src="https://randomuser.me/api/portraits/men/44.jpg" class="w-10 h-10 rounded-full border-2 border-white" alt="User">
-                            <img src="https://randomuser.me/api/portraits/women/55.jpg" class="w-10 h-10 rounded-full border-2 border-white" alt="User">
-                            <img src="https://randomuser.me/api/portraits/men/36.jpg" class="w-10 h-10 rounded-full border-2 border-white" alt="User">
-                            <div class="w-10 h-10 rounded-full border-2 border-white bg-primary-600 flex items-center justify-center text-xs text-white font-bold">
-                                +1K
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-white font-semibold">Bergabunglah dengan 1000+ alumni</p>
-                            <p class="text-slate-400 text-sm">yang telah terhubung di platform kami</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="hidden md:flex justify-center relative" data-aos="fade-left">
-                    <div class="relative w-full max-w-md">
-                        <div class="absolute -top-8 -left-8 w-24 h-24 bg-blue-500/20 rounded-full filter blur-xl"></div>
-                        <div class="absolute -bottom-10 -right-8 w-32 h-32 bg-purple-500/20 rounded-full filter blur-xl"></div>
-                        
-                        <div class="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl overflow-hidden shadow-xl floating">
-                            <div class="p-6">
-                                <div class="flex justify-between items-center mb-6">
-                                    <div class="flex items-center">
-                                        <div class="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center text-white font-bold">
-                                            DB
-                                        </div>
-                                        <div class="ml-4">
-                                            <h4 class="text-white font-semibold">Dewi Budianti</h4>
-                                            <p class="text-slate-400 text-sm">Software Engineer at Tokopedia</p>
-                                        </div>
-                                    </div>
-                                    <div class="bg-blue-500/20 rounded-full p-2">
-                                        <i class="fas fa-check text-blue-400"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="bg-slate-800/50 rounded-xl p-4 mb-4">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <h5 class="text-white font-medium">Status Karir</h5>
-                                        <span class="text-xs bg-green-500/20 text-green-400 py-1 px-2 rounded-full">Bekerja</span>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between">
-                                            <span class="text-slate-400 text-sm">Perusahaan</span>
-                                            <span class="text-white text-sm">Tokopedia</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-slate-400 text-sm">Posisi</span>
-                                            <span class="text-white text-sm">Software Engineer</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-slate-400 text-sm">Tahun Lulus</span>
-                                            <span class="text-white text-sm">2019</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex space-x-2 mb-4">
-                                    <div class="bg-slate-800/50 rounded-xl p-3 flex-1 text-center">
-                                        <h5 class="text-primary-400 text-2xl font-bold">15</h5>
-                                        <p class="text-slate-400 text-xs">Koneksi</p>
-                                    </div>
-                                    <div class="bg-slate-800/50 rounded-xl p-3 flex-1 text-center">
-                                        <h5 class="text-purple-400 text-2xl font-bold">8</h5>
-                                        <p class="text-slate-400 text-xs">Acara</p>
-                                    </div>
-                                    <div class="bg-slate-800/50 rounded-xl p-3 flex-1 text-center">
-                                        <h5 class="text-amber-400 text-2xl font-bold">3</h5>
-                                        <p class="text-slate-400 text-xs">Mentoring</p>
-                                    </div>
-                                </div>
-                                
-                                <button class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-xl transition">
-                                    Lihat Profil Lengkap
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Partners Section -->
-    <section class="py-12 border-t border-slate-800/50">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-6">
-                <h4 class="text-slate-400 text-sm uppercase tracking-wider">Perusahaan Mitra & Alumni Bekerja di</h4>
-            </div>
-            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-                <div class="text-slate-400 text-2xl opacity-60 hover:opacity-100 transition">
-                    <i class="fab fa-google"></i>
-                </div>
-                <div class="text-slate-400 text-2xl opacity-60 hover:opacity-100 transition">
-                    <i class="fab fa-microsoft"></i>
-                </div>
-                <div class="text-slate-400 text-2xl opacity-60 hover:opacity-100 transition">
-                    <i class="fab fa-amazon"></i>
-                </div>
-                <div class="text-slate-400 text-2xl opacity-60 hover:opacity-100 transition">
-                    <img src="{{ asset('img/tokopedia.svg') }}" alt="Tokopedia" class="h-6 grayscale opacity-80 hover:opacity-100 transition">
-                </div>
-                <div class="text-slate-400 text-2xl opacity-60 hover:opacity-100 transition">
-                    <img src="{{ asset('img/gojek.svg') }}" alt="Gojek" class="h-6 grayscale opacity-80 hover:opacity-100 transition">
-                </div>
-                <div class="text-slate-400 text-2xl opacity-60 hover:opacity-100 transition">
-                    <img src="{{ asset('img/traveloka.svg') }}" alt="Traveloka" class="h-6 grayscale opacity-80 hover:opacity-100 transition">
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Features Section -->
-    <section id="features" class="py-20 px-4 sm:px-6 lg:px-8">
-        <div class="container mx-auto max-w-7xl">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h5 class="text-primary-500 font-semibold tracking-wider mb-2">FITUR UTAMA</h5>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Manfaat Bergabung dengan Portal Alumni PTIK</h2>
-                <p class="text-slate-300 max-w-3xl mx-auto">Akses berbagai fitur eksklusif yang dirancang khusus untuk mendukung pengembangan karier dan jejaring profesional alumni PTIK Institut Prima Bangsa.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 card-hover" data-aos="fade-up">
-                    <div class="feature-icon w-14 h-14">
-                        <i class="fas fa-network-wired text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Jaringan Alumni</h3>
-                    <p class="text-slate-300 mb-4">Terhubung dengan ribuan alumni PTIK dari berbagai angkatan dan berbagai sektor industri di seluruh dunia.</p>
-                    <a href="#" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
-                        Lihat Selengkapnya 
-                        <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-                
-                <!-- Feature 2 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-icon w-14 h-14">
-                        <i class="fas fa-briefcase text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Info Karir Eksklusif</h3>
-                    <p class="text-slate-300 mb-4">Akses lowongan pekerjaan eksklusif dari perusahaan partner dan alumni yang membuka rekrutmen.</p>
-                    <a href="#" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
-                        Lihat Selengkapnya 
-                        <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-                
-                <!-- Feature 3 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-icon w-14 h-14">
-                        <i class="fas fa-chalkboard-teacher text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Program Mentoring</h3>
-                    <p class="text-slate-300 mb-4">Dapatkan bimbingan karier dari alumni senior yang sukses di bidangnya atau jadilah mentor bagi juniormu.</p>
-                    <a href="#" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
-                        Lihat Selengkapnya 
-                        <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-                
-                <!-- Feature 4 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-icon w-14 h-14">
-                        <i class="fas fa-calendar-alt text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Event & Gathering</h3>
-                    <p class="text-slate-300 mb-4">Ikuti berbagai acara reuni, seminar, workshop, dan gathering alumni yang diadakan secara berkala.</p>
-                    <a href="#" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
-                        Lihat Selengkapnya 
-                        <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-                
-                <!-- Feature 5 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-icon w-14 h-14">
-                        <i class="fas fa-graduation-cap text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Informasi Studi Lanjut</h3>
-                    <p class="text-slate-300 mb-4">Akses informasi tentang beasiswa, program pascasarjana, dan berbagi pengalaman studi lanjut.</p>
-                    <a href="#" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
-                        Lihat Selengkapnya 
-                        <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-                
-                <!-- Feature 6 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 card-hover" data-aos="fade-up" data-aos-delay="500">
-                    <div class="feature-icon w-14 h-14">
-                        <i class="fas fa-chart-line text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Statistik & Tracer</h3>
-                    <p class="text-slate-300 mb-4">Lihat visualisasi data alumni, distribusi karier, dan pemetaan lokasi alumni secara real-time.</p>
-                    <a href="#" class="text-primary-400 hover:text-primary-300 inline-flex items-center text-sm font-medium">
-                        Lihat Selengkapnya 
-                        <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
-        <div class="container mx-auto max-w-7xl">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h5 class="text-primary-500 font-semibold tracking-wider mb-2">TESTIMONI</h5>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Apa Kata Alumni Kami</h2>
-                <p class="text-slate-300 max-w-3xl mx-auto">Pengalaman alumni yang telah menggunakan platform kami dan merasakan manfaat dari jaringan alumni PTIK.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Testimonial 1 -->
-                <div class="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6" data-aos="fade-up">
-                    <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-full overflow-hidden mr-4">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Reza Setiawan" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="text-white font-semibold">Reza Setiawan</h4>
-                            <p class="text-primary-400 text-sm">Full-stack Developer di Gojek</p>
-                            <p class="text-slate-400 text-xs">Angkatan 2020</p>
-                        </div>
-                    </div>
-                    <p class="text-slate-300 mb-4">"Program magang dan kerjasama industri dari jurusan membantu saya mendapatkan pekerjaan bahkan sebelum lulus. Network alumni juga sangat membantu saya berkembang di industri teknologi."</p>
-                    <div class="flex text-amber-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-                
-                <!-- Testimonial 2 -->
-                <div class="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-full overflow-hidden mr-4">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Dewi Budianti" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="text-white font-semibold">Dewi Budianti</h4>
-                            <p class="text-primary-400 text-sm">Software Engineer di Tokopedia</p>
-                            <p class="text-slate-400 text-xs">Angkatan 2019</p>
-                        </div>
-                    </div>
-                    <p class="text-slate-300 mb-4">"Portal alumni PTIK membuka banyak peluang networking yang sangat berharga. Saya bisa terhubung dengan alumni senior yang membantu saya mendapatkan posisi saat ini di Tokopedia."</p>
-                    <div class="flex text-amber-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-                
-                <!-- Testimonial 3 -->
-                <div class="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-full overflow-hidden mr-4">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Nadia Azizah" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="text-white font-semibold">Nadia Azizah</h4>
-                            <p class="text-primary-400 text-sm">UI/UX Designer di Traveloka</p>
-                            <p class="text-slate-400 text-xs">Angkatan 2021</p>
-                        </div>
-                    </div>
-                    <p class="text-slate-300 mb-4">"Fitur mentoring di platform ini sangat membantu karir saya. Mendapatkan wawasan dan bimbingan langsung dari senior yang sudah berpengalaman sangat berharga untuk perkembangan karir."</p>
-                    <div class="flex text-amber-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center mt-12">
-                <a href="" class="inline-flex items-center text-primary-400 hover:text-primary-300 font-medium">
-                    Lihat Semua Testimoni
-                    <i class="fas fa-arrow-right ml-2"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Statistics Section -->
-    <section id="statistics" class="py-20 px-4 sm:px-6 lg:px-8">
-        <div class="container mx-auto max-w-7xl">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h5 class="text-primary-500 font-semibold tracking-wider mb-2">STATISTIK</h5>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Distribusi Alumni PTIK</h2>
-                <p class="text-slate-300 max-w-3xl mx-auto">Melihat sebaran dan pencapaian alumni PTIK Institut Prima Bangsa dari berbagai angkatan.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Stat 1 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 text-center" data-aos="fade-up">
-                    <div class="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-users text-blue-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-3xl font-bold text-white mb-2">1,250+</h3>
-                    <p class="text-slate-400">Total Alumni</p>
-                </div>
-                
-                <!-- Stat 2 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-16 h-16 bg-green-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-briefcase text-green-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-3xl font-bold text-white mb-2">85%</h3>
-                    <p class="text-slate-400">Tingkat Penyerapan Kerja</p>
-                </div>
-                
-                <!-- Stat 3 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 text-center" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-16 h-16 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-graduation-cap text-purple-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-3xl font-bold text-white mb-2">10%</h3>
-                    <p class="text-slate-400">Melanjutkan Studi S2/S3</p>
-                </div>
-                
-                <!-- Stat 4 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-6 text-center" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-16 h-16 bg-amber-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-globe text-amber-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-3xl font-bold text-white mb-2">25+</h3>
-                    <p class="text-slate-400">Tersebar di Negara</p>
-                </div>
-            </div>
-            
-            <div class="mt-12 text-center">
-                <a href="#" class="inline-block btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg">
-                    Lihat Statistik Lengkap
-                </a>
-            </div>
-        </div>
-    </section>
-    
-    <!-- FAQ Section -->
-    <section id="faq" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
-        <div class="container mx-auto max-w-4xl">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h5 class="text-primary-500 font-semibold tracking-wider mb-2">FAQ</h5>
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Pertanyaan Umum</h2>
-                <p class="text-slate-300 max-w-2xl mx-auto">Temukan jawaban untuk pertanyaan yang sering diajukan tentang portal alumni PTIK.</p>
-            </div>
-            
-            <div class="space-y-4">
-                <!-- FAQ Item 1 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl" data-aos="fade-up">
-                    <button class="faq-toggle w-full text-left px-6 py-4 focus:outline-none flex items-center justify-between">
-                        <h4 class="font-semibold text-white">Bagaimana cara mendaftar ke portal alumni?</h4>
-                        <i class="faq-icon fas fa-chevron-down h-5 w-5 text-primary-400 transform transition-transform"></i>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-4">
-                        <p class="text-slate-300">Alumni dapat mendaftar dengan mengklik tombol "Register" pada halaman utama. Kemudian isi formulir dengan data diri serta bukti kelulusan dari PTIK. Tim admin akan memverifikasi dan mengaktifkan akun dalam 1-2 hari kerja.</p>
-                    </div>
-                </div>
-                
-                <!-- FAQ Item 2 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl" data-aos="fade-up" data-aos-delay="50">
-                    <button class="faq-toggle w-full text-left px-6 py-4 focus:outline-none flex items-center justify-between">
-                        <h4 class="font-semibold text-white">Apa saja fitur utama yang tersedia di portal alumni?</h4>
-                        <i class="faq-icon fas fa-chevron-down h-5 w-5 text-primary-400 transform transition-transform"></i>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-4">
-                        <p class="text-slate-300">Portal alumni menyediakan berbagai fitur seperti direktori alumni, info lowongan kerja, program mentoring, forum diskusi, data statistik, dan informasi mengenai event dan reuni yang akan datang.</p>
-                    </div>
-                </div>
-                
-                <!-- FAQ Item 3 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl" data-aos="fade-up" data-aos-delay="100">
-                    <button class="faq-toggle w-full text-left px-6 py-4 focus:outline-none flex items-center justify-between">
-                        <h4 class="font-semibold text-white">Bagaimana cara mengupdate data saya di portal alumni?</h4>
-                        <i class="faq-icon fas fa-chevron-down h-5 w-5 text-primary-400 transform transition-transform"></i>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-4">
-                        <p class="text-slate-300">Setelah login, kunjungi halaman "Profil Saya" dan klik tombol "Edit Profil". Di sana Anda dapat memperbarui informasi kontak, pengalaman kerja, pendidikan lanjutan, dan informasi lainnya. Jangan lupa menekan tombol "Simpan" setelah selesai.</p>
-                    </div>
-                </div>
-                
-                <!-- FAQ Item 4 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl" data-aos="fade-up" data-aos-delay="150">
-                    <button class="faq-toggle w-full text-left px-6 py-4 focus:outline-none flex items-center justify-between">
-                        <h4 class="font-semibold text-white">Apakah ada biaya untuk menggunakan portal alumni?</h4>
-                        <i class="faq-icon fas fa-chevron-down h-5 w-5 text-primary-400 transform transition-transform"></i>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-4">
-                        <p class="text-slate-300">Tidak, portal alumni PTIK dapat digunakan secara gratis oleh semua alumni. Semua fitur tersedia tanpa biaya tambahan sebagai bentuk layanan dari almamater kepada para alumninya.</p>
-                    </div>
-                </div>
-                
-                <!-- FAQ Item 5 -->
-                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
-                    <button class="faq-toggle w-full text-left px-6 py-4 focus:outline-none flex items-center justify-between">
-                        <h4 class="font-semibold text-white">Bagaimana cara berpartisipasi dalam program mentoring?</h4>
-                        <i class="faq-icon fas fa-chevron-down h-5 w-5 text-primary-400 transform transition-transform"></i>
-                    </button>
-                    <div class="faq-content hidden px-6 pb-4">
-                        <p class="text-slate-300">Untuk berpartisipasi dalam program mentoring, kunjungi menu "Program Mentoring" di dashboard Anda. Di sana Anda dapat mendaftar sebagai mentor atau mentee. Jika mendaftar sebagai mentee, Anda dapat memilih mentor yang sesuai dengan minat dan tujuan karier Anda.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- CTA Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-primary-600/30 to-blue-700/30 z-0"></div>
-        <div class="absolute inset-0 opacity-30 z-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23ffffff\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E')"></div>
-        
-        <div class="container mx-auto max-w-5xl relative z-10">
-            <div class="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-2xl p-8 md:p-12 shadow-2xl border border-slate-700/30" data-aos="fade-up">
-                <div class="flex flex-col md:flex-row md:items-center">
-                    <div class="flex-1 mb-8 md:mb-0 md:mr-8">
-                        <h2 class="text-3xl font-bold text-white mb-4">Bergabung dengan Komunitas Alumni PTIK</h2>
-                        <p class="text-slate-300 mb-4">Jangan lewatkan kesempatan untuk terhubung dengan sesama alumni, mengakses peluang karier, dan terus mengembangkan jaringan profesional Anda.</p>
-                        <div class="flex flex-wrap gap-4 mt-6">
-                            <a href="#" class="btn-gradient text-white font-semibold py-3 px-8 rounded-xl shadow-lg inline-flex items-center justify-center">
-                                <i class="fas fa-user-plus mr-2"></i> Daftar Sekarang
-                            </a>
-                            <a href="#" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-xl inline-flex items-center justify-center border border-white/10">
-                                <i class="fas fa-sign-in-alt mr-2"></i> Login
-                            </a>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 flex flex-col items-center">
-                        <div class="w-28 h-28 rounded-full bg-primary-600/20 flex items-center justify-center border border-primary-500/30">
-                            <i class="fas fa-graduation-cap text-4xl text-primary-400"></i>
-                        </div>
-                        <div class="mt-4 text-center">
-                            <p class="text-sm text-primary-400">Bergabung bersama</p>
-                            <p class="text-2xl font-bold text-white">1,250+ Alumni</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Footer -->
-    <footer class="bg-slate-900 py-12 px-4 sm:px-6 lg:px-8 border-t border-slate-800">
-        <div class="container mx-auto max-w-7xl">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                <div>
-                    <div class="flex items-center mb-6">
-                        <i class="fas fa-graduation-cap text-3xl text-primary-500 mr-3"></i>
-                        <h3 class="text-xl font-bold text-white">PTIK Alumni</h3>
-                    </div>
-                    <p class="text-slate-400 mb-6">Portal resmi alumni Pendidikan Teknik Informatika dan Komputer Institut Prima Bangsa. Terhubung, Berkembang, dan Berbagi bersama.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-slate-400 hover:text-white">
-                            <i class="fab fa-facebook-f h-5 w-5"></i>
-                        </a>
-                        <a href="#" class="text-slate-400 hover:text-white">
-                            <i class="fab fa-twitter h-5 w-5"></i>
-                        </a>
-                        <a href="#" class="text-slate-400 hover:text-white">
-                            <i class="fab fa-instagram h-5 w-5"></i>
-                        </a>
-                        <a href="#" class="text-slate-400 hover:text-white">
-                            <i class="fab fa-linkedin-in h-5 w-5"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold text-white mb-4">Navigasi</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#features" class="text-slate-400 hover:text-white">Fitur</a></li>
-                        <li><a href="#testimonials" class="text-slate-400 hover:text-white">Testimoni</a></li>
-                        <li><a href="#statistics" class="text-slate-400 hover:text-white">Statistik</a></li>
-                        <li><a href="#faq" class="text-slate-400 hover:text-white">FAQ</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white">Data Alumni</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white">Login</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white">Register</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold text-white mb-4">Website Terkait</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-slate-400 hover:text-white">Website Resmi PTIK</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white">Portal Akademik</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white">Bursa Kerja Khusus</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white">Penelitian Dosen</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white">Jurnal Ilmiah</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold text-white mb-4">Kontak</h4>
-                    <ul class="space-y-3">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt h-5 w-5 mr-3 text-primary-400 flex-shrink-0 mt-1"></i>
-                            <span class="text-slate-400">Jl. Raya Bogor Km. 28, Jakarta Timur, Indonesia</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-envelope h-5 w-5 mr-3 text-primary-400 flex-shrink-0 mt-1"></i>
-                            <span class="text-slate-400">alumni@ptikipb.ac.id</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-phone h-5 w-5 mr-3 text-primary-400 flex-shrink-0 mt-1"></i>
-                            <span class="text-slate-400">+62 812-3456-7890</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-slate-800 pt-8">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-slate-500 text-sm mb-4 md:mb-0">© {{ date('Y') }} PTIK Institut Prima Bangsa. Hak Cipta Dilindungi.</p>
-                    <div class="flex space-x-6">
-                        <a href="#" class="text-slate-500 hover:text-white text-sm">Kebijakan Privasi</a>
-                        <a href="#" class="text-slate-500 hover:text-white text-sm">Syarat & Ketentuan</a>
-                        <a href="#" class="text-slate-500 hover:text-white text-sm">Peta Situs</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-@endsection
+  <!-- Hero -->
+  <section id="beranda"
+    class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative overflow-hidden pt-16">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/30 via-purple-800/20 to-transparent blur-3xl z-0"></div>
 
-@section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-            });
+    <!-- Animated particles background -->
+    <div id="particles" class="absolute inset-0 z-0"></div>
+
+    <div class="z-10 max-w-3xl">
+      <span class="bg-primary-600 text-white text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4">STATISTIK
+        ALUMNI</span>
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-white drop-shadow-lg">
+        Perjalanan Karir Alumni <span class="text-primary-400">Institut Prima Bangsa</span>
+      </h1>
+      <p class="text-lg md:text-xl text-slate-200 mb-8 leading-relaxed">
+        @if(count($alumni) > 0)
+        Visualisasi data {{ count($alumni) }} alumni IPB dari berbagai tahun kelulusan mencakup distribusi karir, studi lanjut, dan perkembangan
+        profesional.
+        @else
+        Belum ada data alumni yang tersedia saat ini. Silakan kembali lagi nanti.
+        @endif
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#statistik"
+          class="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
+          Lihat Statistik
+        </a>
+        <a href="{{ route('login.form') }}"
+          class="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
+          Login Alumni
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Statistik Cards -->
+  <section id="statistik" class="py-20 px-6 relative">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mb-4">Statistik Alumni</h2>
+        <p class="text-slate-300 max-w-2xl mx-auto">
+          @if(count($alumni) > 0)
+          Persentase keberhasilan lulusan Institut Prima Bangsa dalam memasuki dunia kerja, pendidikan lanjut, dan pencapaian lainnya.
+          @else
+          Belum ada data statistik alumni yang tersedia saat ini.
+          @endif
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-green-500/20 text-green-400 mb-4">
+            <i class="fas fa-briefcase text-3xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-green-400 mb-1">{{ $stats['bekerja_percent'] }}%</h3>
+          <p class="text-slate-300 mb-3 font-medium">Sudah Bekerja</p>
+          <p class="text-slate-400 text-sm">Bekerja di berbagai sektor industri dalam waktu kurang dari 6 bulan setelah
+            lulus.</p>
+          <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
+            <div class="bg-green-400 h-full rounded-full" style="width: {{ $stats['bekerja_percent'] }}%"></div>
+          </div>
+        </div>
+
+        <div
+          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-blue-500/20 text-blue-400 mb-4">
+            <i class="fas fa-graduation-cap text-3xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-blue-400 mb-1">{{ $stats['studi_lanjut_percent'] }}%</h3>
+          <p class="text-slate-300 mb-3 font-medium">Lanjut Studi</p>
+          <p class="text-slate-400 text-sm">Melanjutkan pendidikan ke jenjang S2 atau program studi lanjutan lainnya.
+          </p>
+          <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
+            <div class="bg-blue-400 h-full rounded-full" style="width: {{ $stats['studi_lanjut_percent'] }}%"></div>
+          </div>
+        </div>
+
+        <div
+          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-orange-500/20 text-orange-400 mb-4">
+            <i class="fas fa-store text-3xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-orange-400 mb-1">{{ $stats['wirausaha_percent'] }}%</h3>
+          <p class="text-slate-300 mb-3 font-medium">Wirausaha</p>
+          <p class="text-slate-400 text-sm">Menjalankan usaha sendiri atau berwirausaha setelah lulus.
+          </p>
+          <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
+            <div class="bg-orange-400 h-full rounded-full" style="width: {{ $stats['wirausaha_percent'] }}%"></div>
+          </div>
+        </div>
+
+        <div
+          class="backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30 hover:transform hover:scale-105 transition duration-300">
+          <div class="flex items-center justify-center w-16 h-16 rounded-xl bg-purple-500/20 text-purple-400 mb-4">
+            <i class="fas fa-home text-3xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-purple-400 mb-1">{{ $stats['mengurus_keluarga_percent'] }}%</h3>
+          <p class="text-slate-300 mb-3 font-medium">Mengurus Keluarga</p>
+          <p class="text-slate-400 text-sm">Memilih untuk fokus mengurus keluarga setelah lulus.
+          </p>
+          <div class="w-full bg-slate-700/30 h-1.5 rounded-full mt-4 overflow-hidden">
+            <div class="bg-purple-400 h-full rounded-full" style="width: {{ $stats['mengurus_keluarga_percent'] }}%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie Chart Section -->
+      <div class="mt-12 grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
+          <h3 class="text-xl font-bold text-white mb-4 text-center">Distribusi Status Alumni</h3>
+          <div class="relative">
+            <canvas id="statusPieChart" class="max-w-full mx-auto" height="280"></canvas>
             
-            // Close mobile menu when clicking links
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', function() {
-                    mobileMenu.classList.add('hidden');
-                });
-            });
+            <!-- Fallback message when no data is available -->
+            @if(count($alumni) == 0 || ($stats['bekerja_count'] + $stats['studi_lanjut_count'] + $stats['wirausaha_count'] + $stats['mengurus_keluarga_count'] == 0))
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="text-slate-400 text-center">
+                <i class="fas fa-chart-pie text-3xl mb-3 opacity-30"></i>
+                <p>Belum ada data</p>
+              </div>
+            </div>
+            @endif
+          </div>
+        </div>
+        
+        <div class="md:col-span-2 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
+          <h3 class="text-xl font-bold text-white mb-4">Informasi Tambahan</h3>
+          
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-primary-400 text-2xl font-bold">{{ count($alumni) }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Total Alumni</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-green-400 text-2xl font-bold">{{ $stats['bekerja_count'] }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Alumni Bekerja</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-blue-400 text-2xl font-bold">{{ $stats['studi_lanjut_count'] }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Alumni Studi Lanjut</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-orange-400 text-2xl font-bold">{{ $stats['wirausaha_count'] }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Alumni Wirausaha</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                <span class="text-purple-400 text-2xl font-bold">{{ $stats['mengurus_keluarga_count'] }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Mengurus Keluarga</p>
+            </div>
+            
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-center mb-2">
+                @php
+                  $currentYear = date('Y');
+                  $recentGrads = $alumni->where('tahun_lulus', '>=', $currentYear - 1)->count();
+                @endphp
+                <span class="text-yellow-400 text-2xl font-bold">{{ $recentGrads }}</span>
+              </div>
+              <p class="text-slate-300 text-center text-sm">Lulusan 1 Tahun Terakhir</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grafik Alumni -->
+  <section id="tren" class="py-20 px-6 bg-slate-900/50">
+    <div class="max-w-5xl mx-auto mb-14 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">Perkembangan Status Alumni</h2>
+      <p class="text-slate-300 max-w-2xl mx-auto">
+        @if(count($alumni) > 0)
+        Tren status alumni Institut Prima Bangsa dari tahun {{ min(array_keys($stats['yearly_data'] ?? [2019 => true])) }} hingga terkini menunjukkan persentase alumni berdasarkan status.
+        @else
+        Belum ada data tren alumni yang tersedia saat ini.
+        @endif
+      </p>
+    </div>
+
+    <div
+      class="max-w-5xl mx-auto bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-slate-700/30">
+      <div class="flex flex-wrap justify-center gap-4 mb-6">
+        <button
+          class="chart-filter px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 border border-primary-500/20 active"
+          data-chart="status">Status Alumni</button>
+      </div>
+
+      <div class="relative">
+        @if(count($alumni) > 0)
+        <canvas id="alumniChart" class="w-full" style="height: 380px;"></canvas>
+        @else
+        <div class="flex items-center justify-center h-80">
+          <div class="text-slate-400 text-center">
+            <i class="fas fa-chart-line text-4xl mb-4 opacity-30"></i>
+            <p>Belum ada data untuk ditampilkan</p>
+          </div>
+        </div>
+        @endif
+        
+        <div id="chartLoader"
+          class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Jenis Pekerjaan Section -->
+  <section id="jenis-pekerjaan" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto mb-14 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">Distribusi Jenis Pekerjaan</h2>
+      <p class="text-slate-300 max-w-2xl mx-auto">
+        @if(count($alumni) > 0 && isset($stats['job_type_distribution']) && count($stats['job_type_distribution']) > 0)
+        Sebaran jenis pekerjaan alumni yang bekerja dan berwirausaha menunjukkan keberagaman karir dan bisnis yang dijalani lulusan Institut Prima Bangsa.
+        @else
+        Belum ada data distribusi jenis pekerjaan yang tersedia saat ini.
+        @endif
+      </p>
+    </div>
+
+    <div
+      class="max-w-5xl mx-auto bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-slate-700/30">
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="md:col-span-3">
+          <div class="relative h-[450px]">
+            @if(count($alumni) > 0 && isset($stats['job_type_distribution']) && count($stats['job_type_distribution']) > 0)
+            <canvas id="jobTypeChart" class="max-w-full h-full mx-auto"></canvas>
+            @else
+            <div class="flex items-center justify-center h-full">
+              <div class="text-slate-400 text-center">
+                <i class="fas fa-chart-bar text-4xl mb-4 opacity-30"></i>
+                <p>Belum ada data untuk ditampilkan</p>
+              </div>
+            </div>
+            @endif
+            
+            <div id="jobChartLoader"
+              class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
+              <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="md:col-span-1">
+          <h3 class="text-xl font-bold text-white mb-4">Keterangan</h3>
+          <div class="bg-slate-800/50 rounded-lg p-4 mb-4">
+            <p class="text-slate-200 text-sm">
+              Setiap warna menunjukkan jenis pekerjaan yang berbeda. Hover pada batang untuk melihat detail.
+            </p>
+          </div>
+          
+          <div class="bg-slate-800/50 rounded-lg p-4 mt-4">
+            <h4 class="text-white font-medium mb-2">Tentang Visualisasi</h4>
+            <p class="text-slate-300 text-sm">
+              Diagram menampilkan distribusi jenis pekerjaan alumni berdasarkan data terbaru. Panjang bar menunjukkan jumlah alumni di setiap jenis pekerjaan.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-10 bg-slate-900 border-t border-slate-800">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <a href="#" class="flex items-center">
+            <img src="{{ asset('assets/logo.ico') }}" alt="Institut Prima Bangsa Logo" class="h-8 w-auto mr-2">
+            <span class="text-white font-bold text-lg">Institut Prima Bangsa</span>
+          </a>
+          <p class="text-slate-400 mt-2 max-w-md">Melacak perjalanan karir alumni untuk membentuk masa depan pendidikan yang lebih baik.</p>
+        </div>
+        <div class="flex flex-col md:flex-row gap-8">
+          <div>
+            <h3 class="text-white font-semibold mb-3">Navigasi</h3>
+            <ul class="space-y-2">
+              <li><a href="#beranda" class="text-slate-400 hover:text-white">Beranda</a></li>
+              <li><a href="#statistik" class="text-slate-400 hover:text-white">Statistik</a></li>
+              <li><a href="#tren" class="text-slate-400 hover:text-white">Tren Alumni</a></li>
+              <li><a href="#jenis-pekerjaan" class="text-slate-400 hover:text-white">Jenis Pekerjaan</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-white font-semibold mb-3">Kontak</h3>
+            <ul class="space-y-2">
+              <li class="flex items-center text-slate-400">
+                <i class="fas fa-map-marker-alt w-5 text-primary-500"></i>
+                <span>Jl. Pendidikan No. 123, Jakarta</span>
+              </li>
+              <li class="flex items-center text-slate-400">
+                <i class="fas fa-envelope w-5 text-primary-500"></i>
+                <span>info@institutprimabangsa.ac.id</span>
+              </li>
+              <li class="flex items-center text-slate-400">
+                <i class="fas fa-phone w-5 text-primary-500"></i>
+                <span>+62 21 5569 9876</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-slate-500 text-sm mb-4 md:mb-0">© {{ date('Y') }} Institut Prima Bangsa. Semua hak dilindungi.</p>
+        <div class="flex space-x-4">
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top button -->
+  <button id="backToTop"
+    class="fixed bottom-6 right-6 bg-primary-600 hover:bg-primary-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform transition hover:scale-110 opacity-0 pointer-events-none">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script>
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobileMenuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', function () {
+        if (mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.remove('hidden');
+        } else {
+          mobileMenu.classList.add('hidden');
         }
-        
-        // FAQ accordion
-        const faqToggles = document.querySelectorAll('.faq-toggle');
-        
-        faqToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const content = toggle.nextElementSibling;
-                const icon = toggle.querySelector('.faq-icon');
-                
-                content.classList.toggle('hidden');
-                if (icon) {
-                    icon.classList.toggle('rotate-180');
-                }
-            });
+      });
+
+      // Close menu when clicking links
+      document.querySelectorAll('#mobileMenu a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          mobileMenu.classList.add('hidden');
         });
-        
-        // Create animated particles
-        createParticles();
-        
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    
-                    // Close mobile menu if open
-                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                }
-            });
-        });
+      });
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 70,
+            behavior: 'smooth'
+          });
+
+          // Close mobile menu if open
+          if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+          }
+        }
+      });
     });
-    
-    // Create animated particles
-    function createParticles() {
-        const container = document.getElementById('particles-container');
-        if (!container) return;
-        
-        const particleCount = 30;
-        
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            // Random size
-            const size = Math.random() * 6 + 2;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            
-            // Random position
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            
-            // Random opacity
-            particle.style.opacity = Math.random() * 0.5 + 0.1;
-            
-            // Random animation
-            const duration = Math.random() * 20 + 10;
-            particle.style.animation = `float ${duration}s infinite ease-in-out`;
-            particle.style.animationDelay = `${Math.random() * 5}s`;
-            
-            container.appendChild(particle);
+
+    // Back to top button
+    const backToTopButton = document.getElementById('backToTop');
+
+    if (backToTopButton) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+          backToTopButton.classList.remove('opacity-0');
+          backToTopButton.classList.add('opacity-100');
+          backToTopButton.classList.remove('pointer-events-none');
+          backToTopButton.classList.add('pointer-events-auto');
+        } else {
+          backToTopButton.classList.remove('opacity-100');
+          backToTopButton.classList.add('opacity-0');
+          backToTopButton.classList.remove('pointer-events-auto');
+          backToTopButton.classList.add('pointer-events-none');
         }
+      });
+
+      backToTopButton.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
     }
-</script>
-@endsection
+
+    // Animated particles background
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      if (!particlesContainer) return;
+
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+
+        // Random size
+        const size = Math.random() * 6 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+
+        // Random position
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+
+        // Random opacity
+        particle.style.opacity = Math.random() * 0.5 + 0.1;
+
+        // Random animation
+        const duration = Math.random() * 20 + 10;
+        particle.style.animation = `float ${duration}s infinite ease-in-out`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Create particles on page load
+    document.addEventListener('DOMContentLoaded', createParticles);
+
+    // Charts
+    document.addEventListener('DOMContentLoaded', function () {
+      // Hide chart loaders after charts are initialized
+      setTimeout(() => {
+        const chartLoader = document.getElementById('chartLoader');
+        const jobChartLoader = document.getElementById('jobChartLoader');
+        
+        if (chartLoader) {
+          chartLoader.style.display = 'none';
+        }
+        
+        if (jobChartLoader) {
+          jobChartLoader.style.display = 'none';
+        }
+      }, 1000);
+
+      @if(count($alumni) > 0 && ($stats['bekerja_count'] + $stats['studi_lanjut_count'] + $stats['wirausaha_count'] + $stats['mengurus_keluarga_count'] > 0))
+      // Status Pie Chart
+      const statusPieChartCtx = document.getElementById('statusPieChart');
+      if (statusPieChartCtx) {
+        // Get percentages
+        const bekerjaPercent = {{ $stats['bekerja_percent'] }};
+        const studiLanjutPercent = {{ $stats['studi_lanjut_percent'] }};
+        const wirausahaPercent = {{ $stats['wirausaha_percent'] }};
+        const mengurusKeluargaPercent = {{ $stats['mengurus_keluarga_percent'] }};
+        
+        const statusPieChart = new Chart(statusPieChartCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Bekerja', 'Lanjut Studi', 'Wirausaha', 'Mengurus Keluarga'],
+            datasets: [{
+              data: [bekerjaPercent, studiLanjutPercent, wirausahaPercent, mengurusKeluargaPercent],
+              backgroundColor: [
+                'rgba(34, 197, 94, 0.8)',  // Green for working
+                'rgba(59, 130, 246, 0.8)',  // Blue for studying
+                'rgba(249, 115, 22, 0.8)',  // Orange for entrepreneurship
+                'rgba(139, 92, 246, 0.8)'   // Purple for family management
+              ],
+              borderColor: [
+                'rgba(34, 197, 94, 1)',
+                'rgba(59, 130, 246, 1)',
+                'rgba(249, 115, 22, 1)',
+                'rgba(139, 92, 246, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#fff',
+                  usePointStyle: true,
+                  padding: 15,
+                  font: {
+                    size: 11
+                  }
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#cbd5e1',
+                padding: 10,
+                borderColor: 'rgba(148, 163, 184, 0.2)',
+                borderWidth: 1,
+                displayColors: true,
+                usePointStyle: true,
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    return `${label}: ${value.toFixed(1)}%`;
+                  }
+                }
+              }
+            },
+            cutout: '60%',
+            animation: {
+              animateScale: true,
+              animateRotate: true
+            }
+          }
+        });
+      }
+      @endif
+
+      @if(count($alumni) > 0)
+      // Alumni Chart
+      const alumniChartCtx = document.getElementById('alumniChart');
+      if (alumniChartCtx) {
+        // Mendapatkan data dari controller
+        const yearlyData = @json($stats['yearly_data'] ?? []);
+        
+        // Ekstrak tahun dan urutkan
+        const years = Object.keys(yearlyData).sort();
+        
+        // Siapkan data untuk chart
+        const bekerjaData = years.map(year => yearlyData[year]?.bekerja_percent || 0);
+        const studiData = years.map(year => yearlyData[year]?.studi_lanjut_percent || 0);
+        const wirausahaData = years.map(year => yearlyData[year]?.wirausaha_percent || 0);
+        const mengurusKeluargaData = years.map(year => yearlyData[year]?.mengurus_keluarga_percent || 0);
+
+        const alumniChart = new Chart(alumniChartCtx, {
+          type: 'line',
+          data: {
+            labels: years,
+            datasets: [
+              {
+                label: 'Bekerja',
+                data: bekerjaData,
+                borderColor: '#22C55E',
+                backgroundColor: 'rgba(34,197,94,0.1)',
+                tension: 0.4,
+                fill: true
+              },
+              {
+                label: 'Lanjut Studi',
+                data: studiData,
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59,130,246,0.1)',
+                tension: 0.4,
+                fill: true
+              },
+              {
+                label: 'Wirausaha',
+                data: wirausahaData,
+                borderColor: '#F97316',
+                backgroundColor: 'rgba(249,115,22,0.1)',
+                tension: 0.4,
+                fill: true
+              },
+              {
+                label: 'Mengurus Keluarga',
+                data: mengurusKeluargaData,
+                borderColor: '#8B5CF6',
+                backgroundColor: 'rgba(139,92,246,0.1)',
+                tension: 0.4,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#fff',
+                  usePointStyle: true,
+                  padding: 20
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#cbd5e1',
+                padding: 12,
+                borderColor: 'rgba(148, 163, 184, 0.2)',
+                borderWidth: 1,
+                displayColors: true,
+                usePointStyle: true
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  color: '#94a3b8',
+                  font: {
+                    size: 11
+                  }
+                },
+                grid: {
+                  color: 'rgba(148, 163, 184, 0.1)',
+                  drawBorder: false
+                },
+                title: {
+                  display: true,
+                  text: 'Persentase (%)',
+                  color: '#cbd5e1',
+                  font: {
+                    size: 12
+                  }
+                }
+              },
+              x: {
+                ticks: {
+                  color: '#94a3b8',
+                  font: {
+                    size: 11
+                  }
+                },
+                grid: {
+                  display: false,
+                  drawBorder: false
+                },
+                title: {
+                  display: true,
+                  text: 'Tahun Lulusan',
+                  color: '#cbd5e1',
+                  font: {
+                    size: 12
+                  }
+                }
+              }
+            },
+            elements: {
+              point: {
+                radius: 3,
+                hoverRadius: 5
+              }
+            }
+          }
+        });
+
+        // Chart filters
+        const chartFilters = document.querySelectorAll('.chart-filter');
+        chartFilters.forEach(filter => {
+          filter.addEventListener('click', () => {
+            // Remove active class from all filters
+            chartFilters.forEach(f => {
+              f.classList.remove('active', 'bg-primary-600');
+              f.classList.add('bg-white/10');
+            });
+
+            // Add active class to current filter
+            filter.classList.remove('bg-white/10');
+            filter.classList.add('active', 'bg-primary-600');
+
+            // Update chart data based on filter
+            const chartType = filter.getAttribute('data-chart');
+
+            if (chartType === 'status') {
+              alumniChart.data.datasets = [
+                {
+                  label: 'Bekerja',
+                  data: bekerjaData,
+                  borderColor: '#22C55E',
+                  backgroundColor: 'rgba(34,197,94,0.1)',
+                  tension: 0.4,
+                  fill: true
+                },
+                {
+                  label: 'Lanjut Studi',
+                  data: studiData,
+                  borderColor: '#3B82F6',
+                  backgroundColor: 'rgba(59,130,246,0.1)',
+                  tension: 0.4,
+                  fill: true
+                },
+                {
+                  label: 'Wirausaha',
+                  data: wirausahaData,
+                  borderColor: '#F97316',
+                  backgroundColor: 'rgba(249,115,22,0.1)',
+                  tension: 0.4,
+                  fill: true
+                },
+                {
+                  label: 'Mengurus Keluarga',
+                  data: mengurusKeluargaData,
+                  borderColor: '#8B5CF6',
+                  backgroundColor: 'rgba(139,92,246,0.1)',
+                  tension: 0.4,
+                  fill: true
+                }
+              ];
+            } 
+            alumniChart.update();
+          });
+        });
+      }
+      @endif
+
+      @if(count($alumni) > 0 && isset($stats['job_type_distribution']) && count($stats['job_type_distribution']) > 0)
+      // Job Type Chart
+      const jobTypeChartCtx = document.getElementById('jobTypeChart');
+      if (jobTypeChartCtx) {
+        // Get job type data from controller
+        const jobTypeData = @json($stats['job_type_distribution'] ?? []);
+        
+        // Get all job types
+        const allJobTypes = Object.keys(jobTypeData);
+        const jobTypeCounts = allJobTypes.map(type => jobTypeData[type].count);
+        
+        // Create an array of vibrant colors for each job type
+        const colorPalette = [
+          'rgba(34, 197, 94, 0.8)',   // green
+          'rgba(249, 115, 22, 0.8)',  // orange
+          'rgba(59, 130, 246, 0.8)',  // blue
+          'rgba(139, 92, 246, 0.8)',  // purple
+          'rgba(236, 72, 153, 0.8)',  // pink
+          'rgba(234, 179, 8, 0.8)',   // yellow
+          'rgba(16, 185, 129, 0.8)',  // emerald
+          'rgba(6, 182, 212, 0.8)',   // cyan
+          'rgba(99, 102, 241, 0.8)',  // indigo
+          'rgba(244, 63, 94, 0.8)',   // rose
+          'rgba(168, 85, 247, 0.8)',  // fuchsia
+          'rgba(20, 184, 166, 0.8)',  // teal
+          'rgba(245, 158, 11, 0.8)',  // amber
+          'rgba(8, 145, 178, 0.8)',   // sky
+          'rgba(217, 70, 239, 0.8)',  // violet
+        ];
+        
+        // Assign colors to each job type
+        const backgroundColors = allJobTypes.map((_, index) => {
+          return colorPalette[index % colorPalette.length];
+        });
+        
+        const borderColors = backgroundColors.map(color => {
+          return color.replace('0.8', '1');
+        });
+        
+        const jobTypeChart = new Chart(jobTypeChartCtx, {
+          type: 'bar',  // Horizontal bar chart
+          data: {
+            labels: allJobTypes,
+            datasets: [{
+              label: 'Jumlah Alumni',
+              data: jobTypeCounts,
+              backgroundColor: backgroundColors,
+              borderColor: borderColors,
+              borderWidth: 1,
+              borderRadius: 4,
+            }]
+          },
+          options: {
+            indexAxis: 'y',  // Horizontal bars
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#cbd5e1',
+                padding: 12,
+                cornerRadius: 8,
+                borderColor: 'rgba(148, 163, 184, 0.2)',
+                borderWidth: 1,
+                callbacks: {
+                  label: function(context) {
+                    const count = context.raw;
+                    return `Jumlah: ${count} alumni`;
+                  },
+                  title: function(context) {
+                    return context[0].label;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                ticks: {
+                  color: '#fff',
+                  font: {
+                    size: 11
+                  },
+                  padding: 10
+                },
+                grid: {
+                  display: false
+                }
+              },
+              x: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0,
+                  color: '#94a3b8',
+                  font: {
+                    size: 11
+                  }
+                },
+                grid: {
+                  color: 'rgba(148, 163, 184, 0.1)',
+                },
+                title: {
+                  display: true,
+                  text: 'Jumlah Alumni',
+                  color: '#cbd5e1',
+                  font: {
+                    size: 12
+                  }
+                }
+              }
+            },
+            layout: {
+              padding: {
+                left: 10,
+                right: 25,
+                top: 0,
+                bottom: 10
+              }
+            }
+          }
+        });
+      }
+      @endif
+    });
+  </script>
+</body>
+</html>

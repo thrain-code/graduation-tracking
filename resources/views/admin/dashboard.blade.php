@@ -1,562 +1,168 @@
+<!-- resources/views/admin/dashboard.blade.php -->
 @extends('layouts.admin')
 
-@section('title', 'Dashboard - Admin PTIK Alumni')
+@section('title', 'Dashboard')
 
 @section('page-title', 'Dashboard')
 
-@section('styles')
-<style>
-    .stat-card {
-        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-        border: 1px solid rgba(255,255,255,0.1);
-        transition: all 0.3s ease;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    
-    .chart-container {
-        height: 300px;
-        position: relative;
-    }
-    
-    .status-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    
-    .status-active {
-        background-color: rgba(16, 185, 129, 0.1);
-        color: #10b981;
-    }
-    
-    .status-pending {
-        background-color: rgba(245, 158, 11, 0.1);
-        color: #f59e0b;
-    }
-    
-    .status-inactive {
-        background-color: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-    }
-</style>
-@endsection
-
 @section('content')
-    <!-- Welcome Message -->
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-800">Selamat Datang, {{ auth()->user()->username ?? 'Admin' }}!</h1>
-        <p class="text-slate-500">Berikut adalah ringkasan data alumni PTIK per {{ date('d F Y') }}</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Alumni Card -->
+    <div class="card rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-white">Total Alumni</h3>
+            <div class="w-12 h-12 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                <i class="fas fa-users text-xl"></i>
+            </div>
+        </div>
+        <p class="text-3xl font-bold text-white mb-1">{{ $totalAlumni }}</p>
     </div>
     
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Alumni -->
-        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-slate-500 font-medium text-sm">TOTAL ALUMNI</h3>
-                <div class="bg-blue-100 p-2 rounded-lg">
-                    <i class="fas fa-user-graduate text-blue-600"></i>
-                </div>
-            </div>
-            <div class="flex items-end justify-between">
-                <div>
-                    <p class="text-3xl font-bold text-slate-800">{{ $stats['total_alumni'] }}</p>
-                    <p class="text-sm text-slate-500">Total data alumni</p>
-                </div>
-                <div class="flex items-center text-emerald-500 text-sm">
-                    <i class="fas fa-arrow-up mr-1"></i>
-                    <span>{{ $stats['alumni_growth'] }}%</span>
-                </div>
+    <!-- Bekerja Card -->
+    <div class="card rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-white">Status Bekerja</h3>
+            <div class="w-12 h-12 rounded-lg bg-green-500/20 text-green-400 flex items-center justify-center">
+                <i class="fas fa-briefcase text-xl"></i>
             </div>
         </div>
-        
-        <!-- Bekerja -->
-        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-slate-500 font-medium text-sm">ALUMNI BEKERJA</h3>
-                <div class="bg-green-100 p-2 rounded-lg">
-                    <i class="fas fa-briefcase text-green-600"></i>
-                </div>
-            </div>
-            <div class="flex items-end justify-between">
-                <div>
-                    <p class="text-3xl font-bold text-slate-800">{{ $stats['working'] }}%</p>
-                    <p class="text-sm text-slate-500">{{ $stats['working_count'] }} alumni</p>
-                </div>
-                <div class="flex items-center text-emerald-500 text-sm">
-                    <i class="fas fa-arrow-up mr-1"></i>
-                    <span>{{ $stats['working_growth'] }}%</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Studi Lanjut -->
-        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-slate-500 font-medium text-sm">STUDI LANJUT</h3>
-                <div class="bg-purple-100 p-2 rounded-lg">
-                    <i class="fas fa-graduation-cap text-purple-600"></i>
-                </div>
-            </div>
-            <div class="flex items-end justify-between">
-                <div>
-                    <p class="text-3xl font-bold text-slate-800">{{ $stats['studying'] }}%</p>
-                    <p class="text-sm text-slate-500">{{ $stats['studying_count'] }} alumni</p>
-                </div>
-                <div class="flex items-center text-red-500 text-sm">
-                    <i class="fas fa-arrow-down mr-1"></i>
-                    <span>{{ $stats['studying_growth'] }}%</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Mencari Kerja -->
-        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-slate-500 font-medium text-sm">MENCARI KERJA</h3>
-                <div class="bg-amber-100 p-2 rounded-lg">
-                    <i class="fas fa-search text-amber-600"></i>
-                </div>
-            </div>
-            <div class="flex items-end justify-between">
-                <div>
-                    <p class="text-3xl font-bold text-slate-800">{{ $stats['searching'] }}%</p>
-                    <p class="text-sm text-slate-500">{{ $stats['searching_count'] }} alumni</p>
-                </div>
-                <div class="flex items-center text-red-500 text-sm">
-                    <i class="fas fa-arrow-down mr-1"></i>
-                    <span>{{ $stats['searching_growth'] }}%</span>
-                </div>
-            </div>
-        </div>
+        <p class="text-3xl font-bold text-white mb-1">{{ $persenBekerja }}%</p>
     </div>
     
-    <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Alumni Trend Chart -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-semibold text-slate-800">Tren Status Alumni</h3>
-                <div class="flex space-x-2">
-                    <button class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 status-filter active" data-period="yearly">Tahunan</button>
-                    <button class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 status-filter" data-period="monthly">Bulanan</button>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="alumniTrendChart"></canvas>
+    <!-- Studi Lanjut Card -->
+    <div class="card rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-white">Studi Lanjut</h3>
+            <div class="w-12 h-12 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                <i class="fas fa-graduation-cap text-xl"></i>
             </div>
         </div>
-        
-        <!-- Employment Sectors Chart -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-semibold text-slate-800">Sektor Pekerjaan</h3>
-                <div class="flex space-x-2">
-                    <select id="sectorYear" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        @foreach($years as $year)
-                            <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>{{ $year }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="sectorChart"></canvas>
-            </div>
-        </div>
+        <p class="text-3xl font-bold text-white mb-1">{{ $persenStudiLanjut }}%</p>
+    </div>
+</div>
+
+<!-- User Management Card -->
+<div class="card rounded-xl p-6 shadow-lg mb-6">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold text-white">Kelola Admin</h3>
+        <button id="openAddUserModal" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center">
+            <i class="fas fa-plus mr-2"></i> Tambah Admin
+        </button>
     </div>
     
-    <!-- Recent Alumni & Activities Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <!-- Recent Alumni -->
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-semibold text-slate-800">Alumni Terbaru</h3>
-                <a href="{{ route('admin.alumni') }}" class="text-sm text-primary-600 hover:text-primary-700">Lihat Semua</a>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="text-left text-slate-500 border-b">
-                            <th class="pb-3 font-medium">Nama</th>
-                            <th class="pb-3 font-medium">Angkatan</th>
-                            <th class="pb-3 font-medium">Status</th>
-                            <th class="pb-3 font-medium">Terdaftar</th>
-                            <th class="pb-3 font-medium"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recent_alumni as $alumni)
-                        <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="py-3">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 font-semibold text-xs mr-3">
-                                        {{ strtoupper(substr($alumni->nama, 0, 1)) }}
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-slate-800">{{ $alumni->nama }}</p>
-                                        <p class="text-xs text-slate-500">{{ $alumni->email }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3">{{ $alumni->tahun_lulus }}</td>
-                            <td class="py-3">
-                                @if($alumni->getCurrentJob())
-                                    <span class="status-badge status-active">Bekerja</span>
-                                @elseif($alumni->pendidikanLanjutan()->exists())
-                                    <span class="status-badge status-pending">Studi Lanjut</span>
-                                @else
-                                    <span class="status-badge status-inactive">Mencari Kerja</span>
-                                @endif
-                            </td>
-                            <td class="py-3 text-slate-500">{{ $alumni->created_at->diffForHumans() }}</td>
-                            <td class="py-3">
-                                <a href="{{ route('admin.alumni.show', $alumni->id) }}" class="text-primary-600 hover:text-primary-800">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="py-4 text-center text-slate-500">Tidak ada data alumni terbaru</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Recent Activities -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-semibold text-slate-800">Aktivitas Terbaru</h3>
-                <a href="{{ route('admin.logs') }}" class="text-sm text-primary-600 hover:text-primary-700">Lihat Semua</a>
-            </div>
-            
-            <div class="space-y-4">
-                @forelse($recent_activities as $activity)
-                <div class="flex">
-                    <div class="flex-shrink-0 mr-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
-                            @switch($activity['type'])
-                                @case('login')
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    @break
-                                @case('register')
-                                    <i class="fas fa-user-plus"></i>
-                                    @break
-                                @case('update')
-                                    <i class="fas fa-edit"></i>
-                                    @break
-                                @case('delete')
-                                    <i class="fas fa-trash-alt"></i>
-                                    @break
-                                @default
-                                    <i class="fas fa-circle"></i>
-                            @endswitch
-                        </div>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-slate-800">{{ $activity['message'] }}</p>
-                        <p class="text-xs text-slate-500 mt-1">{{ $activity['time'] }}</p>
-                    </div>
-                </div>
-                @empty
-                <div class="text-center py-4">
-                    <p class="text-slate-500">Tidak ada aktivitas terbaru</p>
-                </div>
-                @endforelse
-            </div>
-        </div>
-    </div>
-    
-    <!-- Quick Access / Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <!-- Top Perusahaan -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h3 class="font-semibold text-slate-800 mb-4">Top Perusahaan</h3>
-            <div class="space-y-3">
-                @foreach($top_companies as $company)
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-semibold text-xs mr-2">
-                            {{ strtoupper(substr($company['name'], 0, 1)) }}
-                        </div>
-                        <span class="text-sm text-slate-800">{{ $company['name'] }}</span>
-                    </div>
-                    <span class="text-sm font-medium text-slate-700">{{ $company['count'] }}</span>
-                </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-slate-800 text-gray-300 text-sm">
+                <tr>
+                    <th class="px-4 py-3 rounded-tl-lg">Nama</th>
+                    <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3 rounded-tr-lg text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-300">
+                @foreach ($admins as $admin)
+                <tr class="border-b border-slate-700 hover:bg-slate-800/40">
+                    <td class="px-4 py-3">{{ $admin->name }}</td>
+                    <td class="px-4 py-3">{{ $admin->email }}</td>
+                    <td class="px-4 py-3 text-right">
+                        <button class="text-blue-400 hover:text-blue-300 mr-3"><i class="fas fa-edit"></i></button>
+                        <form action="{{ route('dashboard.admin.delete', $admin->id) }}" method="post">
+                            @csrf
+                            @method("DELETE")
+                            <button class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
                 @endforeach
-            </div>
-        </div>
-        
-        <!-- Top Institusi Pendidikan Lanjut -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h3 class="font-semibold text-slate-800 mb-4">Top Institusi Pendidikan</h3>
-            <div class="space-y-3">
-                @foreach($top_institutions as $institution)
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-semibold text-xs mr-2">
-                            {{ strtoupper(substr($institution['name'], 0, 1)) }}
-                        </div>
-                        <span class="text-sm text-slate-800">{{ $institution['name'] }}</span>
-                    </div>
-                    <span class="text-sm font-medium text-slate-700">{{ $institution['count'] }}</span>
-                </div>
-                @endforeach
-            </div>
-        </div>
-        
-        <!-- Domisili / Lokasi -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h3 class="font-semibold text-slate-800 mb-4">Domisili Alumni</h3>
-            <div class="space-y-3">
-                @foreach($top_locations as $location)
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 mr-2">
-                            <i class="fas fa-map-marker-alt text-slate-500 text-xs"></i>
-                        </div>
-                        <span class="text-sm text-slate-800">{{ $location['name'] }}</span>
-                    </div>
-                    <span class="text-sm font-medium text-slate-700">{{ $location['count'] }}</span>
-                </div>
-                @endforeach
-            </div>
-        </div>
-        
-        <!-- Quick Tasks -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h3 class="font-semibold text-slate-800 mb-4">Tugas Cepat</h3>
-            <div class="space-y-3">
-                <a href="{{ route('admin.alumni.create') }}" class="flex items-center p-3 rounded-lg hover:bg-slate-50 transition">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
-                        <i class="fas fa-user-plus text-xs"></i>
-                    </div>
-                    <span class="text-sm text-slate-800">Tambah Alumni Baru</span>
-                </a>
                 
-                <a href="{{ route('admin.survey') }}" class="flex items-center p-3 rounded-lg hover:bg-slate-50 transition">
-                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
-                        <i class="fas fa-chart-pie text-xs"></i>
-                    </div>
-                    <span class="text-sm text-slate-800">Buat Survey Baru</span>
-                </a>
-                
-                <a href="{{ route('admin.exportData') }}" class="flex items-center p-3 rounded-lg hover:bg-slate-50 transition">
-                    <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
-                        <i class="fas fa-file-export text-xs"></i>
-                    </div>
-                    <span class="text-sm text-slate-800">Export Data Alumni</span>
-                </a>
-                
-                <a href="{{ route('admin.reports.generate') }}" class="flex items-center p-3 rounded-lg hover:bg-slate-50 transition">
-                    <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 mr-3">
-                        <i class="fas fa-file-pdf text-xs"></i>
-                    </div>
-                    <span class="text-sm text-slate-800">Buat Laporan</span>
-                </a>
-            </div>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="flex justify-between items-center mt-4">
+        <p class="text-sm text-gray-400">Menampilkan 3 dari 25 pengguna</p>
+        <div class="flex">
+            <a href="#" class="text-gray-400 hover:text-white px-3 py-1 rounded-lg mr-1 bg-slate-800">Prev</a>
+            <a href="#" class="text-white px-3 py-1 rounded-lg mr-1 bg-primary-600">1</a>
+            <a href="#" class="text-gray-400 hover:text-white px-3 py-1 rounded-lg mr-1 bg-slate-800">2</a>
+            <a href="#" class="text-gray-400 hover:text-white px-3 py-1 rounded-lg mr-1 bg-slate-800">3</a>
+            <a href="#" class="text-gray-400 hover:text-white px-3 py-1 rounded-lg bg-slate-800">Next</a>
         </div>
     </div>
+</div>
 @endsection
 
-@section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Alumni Trend Chart
-        const trendsCtx = document.getElementById('alumniTrendChart').getContext('2d');
+@section('modals')
+<!-- Modal - Add User -->
+<div id="addUserModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative top-20 mx-auto max-w-xl bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-700">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-white">Tambah Admin Baru</h3>
+            <button id="closeAddUserModal" class="text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
         
-        const trendsData = {
-            yearly: {
-                labels: @json($trends['yearly']['labels']),
-                bekerja: @json($trends['yearly']['working']),
-                studi: @json($trends['yearly']['studying']),
-                mencari: @json($trends['yearly']['searching'])
-            },
-            monthly: {
-                labels: @json($trends['monthly']['labels']),
-                bekerja: @json($trends['monthly']['working']),
-                studi: @json($trends['monthly']['studying']),
-                mencari: @json($trends['monthly']['searching'])
-            }
-        };
-        
-        let activePeriod = 'yearly';
-        
-        const trendsChart = new Chart(trendsCtx, {
-            type: 'line',
-            data: {
-                labels: trendsData[activePeriod].labels,
-                datasets: [
-                    {
-                        label: 'Bekerja',
-                        data: trendsData[activePeriod].bekerja,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true
-                    },
-                    {
-                        label: 'Studi Lanjut',
-                        data: trendsData[activePeriod].studi,
-                        borderColor: '#8b5cf6',
-                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true
-                    },
-                    {
-                        label: 'Mencari Kerja',
-                        data: trendsData[activePeriod].mencari,
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            boxWidth: 12,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                        titleColor: '#fff',
-                        bodyColor: '#e2e8f0',
-                        padding: 10,
-                        displayColors: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        },
-                        grid: {
-                            drawBorder: false,
-                            color: 'rgba(226, 232, 240, 0.3)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        }
-                    }
-                }
-            }
-        });
-        
-        // Handle period filter clicks
-        document.querySelectorAll('.status-filter').forEach(button => {
-            button.addEventListener('click', function() {
-                const period = this.getAttribute('data-period');
+        <form action="{{route('dashboard.admin.add')}}" method="POST">
+            @csrf
+            <div class="grid grid-cols-1 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-300 mb-1">Nama</label>
+                    <input type="text" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="name">
+                </div>
                 
-                // Toggle active class
-                document.querySelectorAll('.status-filter').forEach(btn => {
-                    btn.classList.remove('active', 'bg-primary-500', 'text-white');
-                    btn.classList.add('bg-slate-100', 'text-slate-600');
-                });
+                <div>
+                    <label class="block text-gray-300 mb-1">Email</label>
+                    <input type="email" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="email">
+                </div>
                 
-                this.classList.remove('bg-slate-100', 'text-slate-600');
-                this.classList.add('active', 'bg-primary-500', 'text-white');
+                <div>
+                    <label class="block text-gray-300 mb-1">Password</label>
+                    <input type="password" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="password">
+                </div>
                 
-                // Update chart data
-                activePeriod = period;
-                trendsChart.data.labels = trendsData[period].labels;
-                trendsChart.data.datasets[0].data = trendsData[period].bekerja;
-                trendsChart.data.datasets[1].data = trendsData[period].studi;
-                trendsChart.data.datasets[2].data = trendsData[period].mencari;
-                trendsChart.update();
-            });
-        });
-        
-        // Initialize with active class
-        document.querySelector('.status-filter.active').classList.remove('bg-slate-100', 'text-slate-600');
-        document.querySelector('.status-filter.active').classList.add('bg-primary-500', 'text-white');
-        
-        // Sector Chart
-        const sectorCtx = document.getElementById('sectorChart').getContext('2d');
-        
-        const sectorData = @json($sectors);
-        const sectorYear = document.getElementById('sectorYear');
-        
-        const sectorChart = new Chart(sectorCtx, {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(sectorData[sectorYear.value]),
-                datasets: [{
-                    data: Object.values(sectorData[sectorYear.value]),
-                    backgroundColor: [
-                        '#3b82f6', // blue
-                        '#8b5cf6', // purple
-                        '#10b981', // green
-                        '#f59e0b', // amber
-                        '#ef4444'  // red
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            boxWidth: 12,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                        titleColor: '#fff',
-                        bodyColor: '#e2e8f0',
-                        padding: 10,
-                        displayColors: true,
-                        callbacks: {
-                            label: function(context) {
-                                return `${context.label}: ${context.raw}%`;
-                            }
-                        }
-                    }
-                },
-                cutout: '65%'
-            }
-        });
-        
-        // Handle sector year change
-        sectorYear.addEventListener('change', function() {
-            const year = this.value;
+            </div>
             
-            sectorChart.data.labels = Object.keys(sectorData[year]);
-            sectorChart.data.datasets[0].data = Object.values(sectorData[year]);
-            sectorChart.update();
-        });
+            <div class="flex justify-end">
+                <button type="button" id="cancelAddUser" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg mr-2">
+                    Batal
+                </button>
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal handling
+        const addUserModal = document.getElementById('addUserModal');
+        const openAddUserModal = document.getElementById('openAddUserModal');
+        const closeAddUserModal = document.getElementById('closeAddUserModal');
+        const cancelAddUser = document.getElementById('cancelAddUser');
+        
+        if (openAddUserModal && addUserModal) {
+            openAddUserModal.addEventListener('click', function() {
+                addUserModal.classList.remove('hidden');
+            });
+        }
+        
+        if (closeAddUserModal) {
+            closeAddUserModal.addEventListener('click', function() {
+                addUserModal.classList.add('hidden');
+            });
+        }
+        
+        if (cancelAddUser) {
+            cancelAddUser.addEventListener('click', function() {
+                addUserModal.classList.add('hidden');
+            });
+        }
     });
 </script>
-@endsection
+@endpush
