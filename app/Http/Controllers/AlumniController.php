@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AlumniController extends Controller
@@ -309,105 +310,112 @@ class AlumniController extends Controller
     }
 
     /**
-     * Process the import file with enhanced error handling and validation
-     */
-    public function importProcess(Request $request)
-    {
-        // Validate the uploaded file
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // Limit to 10MB
-        ], [
-            'file.required' => 'File import wajib diunggah',
-            'file.file' => 'Data harus berupa file',
-            'file.mimes' => 'Format file harus xlsx, xls, atau csv',
-            'file.max' => 'Ukuran file maksimal 10MB',
-        ]);
+ * Process the import file with enhanced error handling and validation
+ */
+public function importProcess(Request $request)
+{
+    // Validate the uploaded file
+    $validator = Validator::make($request->all(), [
+        'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // Limit to 10MB
+    ], [
+        'file.required' => 'File import wajib diunggah',
+        'file.file' => 'Data harus berupa file',
+        'file.mimes' => 'Format file harus xlsx, xls, atau csv',
+        'file.max' => 'Ukuran file maksimal 10MB',
+    ]);
 
-        if ($validator->fails()) {
-            return redirect()->route('alumni.import.form')
-                ->withErrors($validator)
-                ->withInput();
+    if ($validator->fails()) {
+        return redirect()->route('alumni.import.form')
+            ->withErrors($validator)
+            ->withInput();
+    }
+
+    try {
+        // Start a database transaction
+        DB::beginTransaction();
+
+        // Initialize the import class
+        $import = new AlumniImport();
+
+        // Store the original file name for logging
+        $originalFileName = $request->file('file')->getClientOriginalName();
+
+        // Import the file
+        Excel::import($import, $request->file('file'));
+
+        // Get import statistics
+        $rowsImported = $import->getImportedCount();
+        $failures = $import->failures();
+
+        // Only count real failures (bukan baris kosong)
+        $realFailures = [];
+        foreach ($failures as $failure) {
+            // Hanya tambahkan ke failures jika ada nilai untuk nama_lengkap dan nim
+            $values = $failure->values();
+            if (!empty(trim($values['nama_lengkap'] ?? '')) && !empty(trim($values['nim'] ?? ''))) {
+                $row = $failure->row();
+                if (!isset($realFailures[$row])) {
+                    $realFailures[$row] = [
+                        'row' => $row,
+                        'errors' => [],
+                        'values' => $values
+                    ];
+                }
+                $realFailures[$row]['errors'][$failure->attribute()] = $failure->errors()[0];
+            }
         }
 
-        try {
-            // Start a database transaction
-            DB::beginTransaction();
+        // Commit the transaction
+        DB::commit();
 
-            // Initialize the import class
-            $import = new AlumniImport();
+        // Log the successful import
+        Log::info('Alumni import completed by: ' . auth()->user()->name .
+                ' - File: ' . $originalFileName .
+                ' - Imported: ' . $rowsImported .
+                ' - Failed: ' . count($realFailures));
 
-            // Store the original file name for logging
-            $originalFileName = $request->file('file')->getClientOriginalName();
-
-            // Import the file with chained configurations
-            Excel::import($import, $request->file('file'));
-
-            // Get import statistics
-            $rowsImported = $import->getImportedCount();
-            $failures = $import->failures();
-
-            // Commit the transaction if we reach this point
-            DB::commit();
-
-            // Log the successful import
-            Log::info('Alumni import completed by: ' . auth()->user()->name . ' - File: ' . $originalFileName . ' - Imported: ' . $rowsImported . ' - Failed: ' . count($failures));
-
-            // Determine the redirect based on failures
-            if (count($failures) > 0) {
-                // Group failures by row and reason for better display
-                $groupedFailures = [];
-                foreach ($failures as $failure) {
-                    $row = $failure->row();
-                    if (!isset($groupedFailures[$row])) {
-                        $groupedFailures[$row] = [
-                            'row' => $row,
-                            'errors' => [],
-                            'values' => $failure->values()
-                        ];
-                    }
-                    $groupedFailures[$row]['errors'][$failure->attribute()] = $failure->errors()[0];
-                }
-
-                return redirect()->route('alumni.import.form')->with([
-                    'warning' => 'Import selesai dengan beberapa error. ' . count($failures) . ' data gagal diimpor.',
-                    'failures' => $groupedFailures,
-                    'success' => 'Berhasil mengimpor ' . $rowsImported . ' data alumni.',
-                    'import_summary' => [
-                        'total_rows' => count($import->rows()),
-                        'imported' => $rowsImported,
-                        'failed' => count($failures),
-                        'date' => now()->format('d M Y H:i:s')
-                    ]
-                ]);
-            }
-
-            // No failures, redirect with success message
-            return redirect()->route('alumni.index')->with([
+        // Determine the redirect based on failures
+        if (count($realFailures) > 0) {
+            return redirect()->route('alumni.import.form')->with([
+                'warning' => 'Import selesai dengan beberapa error. ' . count($realFailures) . ' data gagal diimpor.',
+                'failures' => $realFailures,
                 'success' => 'Berhasil mengimpor ' . $rowsImported . ' data alumni.',
                 'import_summary' => [
                     'total_rows' => count($import->rows()),
                     'imported' => $rowsImported,
-                    'failed' => 0,
+                    'failed' => count($realFailures),
                     'date' => now()->format('d M Y H:i:s')
                 ]
             ]);
-
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            // Handle validation exception
-            DB::rollBack();
-            Log::error('Import Validation Error: ' . $e->getMessage());
-
-            return redirect()->route('alumni.import.form')
-                ->with('error', 'Terjadi kesalahan validasi saat mengimpor data. Silakan periksa format file Anda.')
-                ->with('validation_failures', $e->failures());
-
-        } catch (\Exception $e) {
-            // Handle any other exceptions
-            DB::rollBack();
-            Log::error('Import Error: ' . $e->getMessage());
-
-            return redirect()->route('alumni.import.form')
-                ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
         }
+
+        // No failures, redirect with success message
+        return redirect()->route('alumni.index')->with([
+            'success' => 'Berhasil mengimpor ' . $rowsImported . ' data alumni.',
+            'import_summary' => [
+                'total_rows' => count($import->rows()),
+                'imported' => $rowsImported,
+                'failed' => 0,
+                'date' => now()->format('d M Y H:i:s')
+            ]
+        ]);
+
+    } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+        // Handle validation exception
+        DB::rollBack();
+        Log::error('Import Validation Error: ' . $e->getMessage());
+
+        return redirect()->route('alumni.import.form')
+            ->with('error', 'Terjadi kesalahan validasi saat mengimpor data. Silakan periksa format file Anda.')
+            ->with('validation_failures', $e->failures());
+
+    } catch (\Exception $e) {
+        // Handle any other exceptions
+        DB::rollBack();
+        Log::error('Import Error: ' . $e->getMessage());
+
+        return redirect()->route('alumni.import.form')
+            ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
     }
+}
 }
