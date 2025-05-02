@@ -17,7 +17,7 @@
         </div>
         <p class="text-3xl font-bold text-white mb-1">{{ $totalAlumni }}</p>
     </div>
-    
+
     <!-- Bekerja Card -->
     <div class="card rounded-xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
@@ -28,7 +28,7 @@
         </div>
         <p class="text-3xl font-bold text-white mb-1">{{ $persenBekerja }}%</p>
     </div>
-    
+
     <!-- Studi Lanjut Card -->
     <div class="card rounded-xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
@@ -49,7 +49,7 @@
             <i class="fas fa-plus mr-2"></i> Tambah Admin
         </button>
     </div>
-    
+
     <div class="overflow-x-auto">
         <table class="w-full text-left">
             <thead class="bg-slate-800 text-gray-300 text-sm">
@@ -74,11 +74,11 @@
                     </td>
                 </tr>
                 @endforeach
-                
+
             </tbody>
         </table>
     </div>
-    
+
     <div class="flex justify-between items-center mt-4">
         <p class="text-sm text-gray-400">Menampilkan 3 dari 25 pengguna</p>
         <div class="flex">
@@ -103,7 +103,7 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        
+
         <form action="{{route('dashboard.admin.add')}}" method="POST">
             @csrf
             <div class="grid grid-cols-1 gap-4 mb-4">
@@ -111,19 +111,19 @@
                     <label class="block text-gray-300 mb-1">Nama</label>
                     <input type="text" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="name">
                 </div>
-                
+
                 <div>
                     <label class="block text-gray-300 mb-1">Email</label>
                     <input type="email" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="email">
                 </div>
-                
+
                 <div>
                     <label class="block text-gray-300 mb-1">Password</label>
                     <input type="password" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500" name="password">
                 </div>
-                
+
             </div>
-            
+
             <div class="flex justify-end">
                 <button type="button" id="cancelAddUser" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg mr-2">
                     Batal
@@ -145,19 +145,19 @@
         const openAddUserModal = document.getElementById('openAddUserModal');
         const closeAddUserModal = document.getElementById('closeAddUserModal');
         const cancelAddUser = document.getElementById('cancelAddUser');
-        
+
         if (openAddUserModal && addUserModal) {
             openAddUserModal.addEventListener('click', function() {
                 addUserModal.classList.remove('hidden');
             });
         }
-        
+
         if (closeAddUserModal) {
             closeAddUserModal.addEventListener('click', function() {
                 addUserModal.classList.add('hidden');
             });
         }
-        
+
         if (cancelAddUser) {
             cancelAddUser.addEventListener('click', function() {
                 addUserModal.classList.add('hidden');

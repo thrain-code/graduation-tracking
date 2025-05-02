@@ -21,12 +21,12 @@
 <div class="card rounded-xl p-6 shadow-lg mb-6">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h3 class="text-xl font-semibold text-white">Daftar Program Studi</h3>
-        
+
         <button id="openAddProdiModal" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center">
             <i class="fas fa-plus mr-2"></i> Tambah Program Studi
         </button>
     </div>
-    
+
     <!-- Search Bar -->
     <div class="mb-6">
         <form method="GET" action="{{ route('prodi.index') }}">
@@ -38,7 +38,7 @@
             </div>
         </form>
     </div>
-    
+
     <!-- Prodi Table -->
     <div class="overflow-x-auto">
         <table class="w-full text-left">
@@ -67,7 +67,7 @@
             </tbody>
         </table>
     </div>
-    
+
     <!-- Pagination -->
     <div class="flex justify-between items-center mt-4">
         <p class="text-sm text-gray-400">Menampilkan {{ $prodis->count() }} dari {{ $prodis->total() }} program studi</p>
@@ -89,7 +89,7 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        
+
         <form action="{{ route('prodi.store') }}" method="POST">
             @csrf
             <div class="mb-4">
@@ -99,7 +99,7 @@
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
-            
+
             <div class="flex justify-end">
                 <button type="button" id="cancelAddProdi" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg mr-2">
                     Batal
@@ -122,7 +122,7 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        
+
         <form id="editProdiForm" method="POST">
             @csrf
             @method('PUT')
@@ -134,7 +134,7 @@
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
-            
+
             <div class="flex justify-end">
                 <button type="button" id="cancelEditProdi" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg mr-2">
                     Batal
@@ -158,7 +158,7 @@
             <h3 class="text-xl font-semibold text-white mb-2">Konfirmasi Hapus</h3>
             <p class="text-gray-400">Apakah Anda yakin ingin menghapus program studi ini? Tindakan ini tidak dapat dibatalkan.</p>
         </div>
-        
+
         <div class="flex justify-center gap-3">
             <button id="cancelDeleteProdi" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg">
                 Batal
@@ -183,25 +183,25 @@
         const addProdiModal = document.getElementById('addProdiModal');
         const closeAddProdiModal = document.getElementById('closeAddProdiModal');
         const cancelAddProdi = document.getElementById('cancelAddProdi');
-        
+
         if (openAddProdiModal && addProdiModal) {
             openAddProdiModal.addEventListener('click', function() {
                 addProdiModal.classList.remove('hidden');
             });
         }
-        
+
         if (closeAddProdiModal) {
             closeAddProdiModal.addEventListener('click', function() {
                 addProdiModal.classList.add('hidden');
             });
         }
-        
+
         if (cancelAddProdi) {
             cancelAddProdi.addEventListener('click', function() {
                 addProdiModal.classList.add('hidden');
             });
         }
-        
+
         // Edit Prodi Modal
         const editButtons = document.querySelectorAll('.edit-prodi-btn');
         const editProdiModal = document.getElementById('editProdiModal');
@@ -210,42 +210,42 @@
         const editProdiForm = document.getElementById('editProdiForm');
         const editProdiId = document.getElementById('edit_prodi_id');
         const editProdiName = document.getElementById('edit_prodi_name');
-        
+
         if (editButtons.length > 0 && editProdiModal && editProdiForm) {
             editButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const id = this.getAttribute('data-id');
                     const name = this.getAttribute('data-name');
-                    
+
                     if (editProdiId) editProdiId.value = id;
                     if (editProdiName) editProdiName.value = name;
                     editProdiForm.action = `{{ url('prodi') }}/${id}`;
-                    
+
                     editProdiModal.classList.remove('hidden');
                 });
             });
         }
-        
+
         if (closeEditProdiModal) {
             closeEditProdiModal.addEventListener('click', function() {
                 editProdiModal.classList.add('hidden');
                 editProdiForm.action = '';
             });
         }
-        
+
         if (cancelEditProdi) {
             cancelEditProdi.addEventListener('click', function() {
                 editProdiModal.classList.add('hidden');
                 editProdiForm.action = '';
             });
         }
-        
+
         // Delete Prodi Modal
         const deleteButtons = document.querySelectorAll('.delete-prodi-btn');
         const deleteProdiModal = document.getElementById('deleteProdiModal');
         const cancelDeleteProdi = document.getElementById('cancelDeleteProdi');
         const deleteProdiForm = document.getElementById('deleteProdiForm');
-        
+
         if (deleteButtons.length > 0 && deleteProdiModal && deleteProdiForm) {
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -257,7 +257,7 @@
                 });
             });
         }
-        
+
         if (cancelDeleteProdi) {
             cancelDeleteProdi.addEventListener('click', function() {
                 deleteProdiModal.classList.add('hidden');

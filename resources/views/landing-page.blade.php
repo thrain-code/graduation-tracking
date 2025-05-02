@@ -13,6 +13,7 @@
   <!-- Font Icons dengan preload untuk kecepatan -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="icon" href="{{ asset('assets/logo.ico') }}" type="image/x-icon">
 
   <!-- Memuat Chart.js dengan versi yang stabil -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -118,6 +119,8 @@
             <a href="#jenis-pekerjaan"
               class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Jenis
               Pekerjaan</a>
+            <a href="#per-prodi"
+              class="text-gray-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Per Prodi</a>
           </div>
         </div>
         <div class="-mr-2 flex md:hidden">
@@ -136,6 +139,7 @@
         <a href="#statistik" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Statistik</a>
         <a href="#tren" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Tren Alumni</a>
         <a href="#jenis-pekerjaan" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Jenis Pekerjaan</a>
+        <a href="#per-prodi" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Per Prodi</a>
       </div>
     </div>
   </nav>
@@ -254,7 +258,7 @@
           <h3 class="text-xl font-bold text-white mb-4 text-center">Distribusi Status Alumni</h3>
           <div class="relative">
             <canvas id="statusPieChart" class="max-w-full mx-auto" height="280"></canvas>
-            
+
             <!-- Fallback message when no data is available -->
             @if(count($alumni) == 0 || ($stats['bekerja_count'] + $stats['studi_lanjut_count'] + $stats['wirausaha_count'] + $stats['mengurus_keluarga_count'] == 0))
             <div class="absolute inset-0 flex items-center justify-center">
@@ -266,10 +270,10 @@
             @endif
           </div>
         </div>
-        
+
         <div class="md:col-span-2 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
           <h3 class="text-xl font-bold text-white mb-4">Informasi Tambahan</h3>
-          
+
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
@@ -277,35 +281,35 @@
               </div>
               <p class="text-slate-300 text-center text-sm">Total Alumni</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-green-400 text-2xl font-bold">{{ $stats['bekerja_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Alumni Bekerja</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-blue-400 text-2xl font-bold">{{ $stats['studi_lanjut_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Alumni Studi Lanjut</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-orange-400 text-2xl font-bold">{{ $stats['wirausaha_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Alumni Wirausaha</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-purple-400 text-2xl font-bold">{{ $stats['mengurus_keluarga_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Mengurus Keluarga</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 @php
@@ -354,7 +358,7 @@
           </div>
         </div>
         @endif
-        
+
         <div id="chartLoader"
           class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
           <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
@@ -391,14 +395,14 @@
               </div>
             </div>
             @endif
-            
+
             <div id="jobChartLoader"
               class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
               <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
             </div>
           </div>
         </div>
-        
+
         <div class="md:col-span-1">
           <h3 class="text-xl font-bold text-white mb-4">Keterangan</h3>
           <div class="bg-slate-800/50 rounded-lg p-4 mb-4">
@@ -406,12 +410,70 @@
               Setiap warna menunjukkan jenis pekerjaan yang berbeda. Hover pada batang untuk melihat detail.
             </p>
           </div>
-          
+
           <div class="bg-slate-800/50 rounded-lg p-4 mt-4">
             <h4 class="text-white font-medium mb-2">Tentang Visualisasi</h4>
             <p class="text-slate-300 text-sm">
               Diagram menampilkan distribusi jenis pekerjaan alumni berdasarkan data terbaru. Panjang bar menunjukkan jumlah alumni di setiap jenis pekerjaan.
             </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Per Prodi Section -->
+  <section id="per-prodi" class="py-20 px-6 bg-slate-900/50">
+    <div class="max-w-5xl mx-auto mb-14 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">Alumni Per Program Studi</h2>
+      <p class="text-slate-300 max-w-2xl mx-auto">
+        Distribusi jenis pekerjaan alumni berdasarkan program studi dan tahun kelulusan.
+      </p>
+    </div>
+
+    <div
+      class="max-w-5xl mx-auto bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-slate-700/30">
+      <div class="flex flex-wrap justify-center gap-6 mb-6">
+        <div class="w-full md:w-auto">
+          <label for="prodi-select" class="block text-white text-sm font-medium mb-2">Program Studi</label>
+          <select id="prodi-select" class="w-full md:w-64 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+            @foreach($prodis as $prodi)
+              <option value="{{ $prodi->id }}">{{ $prodi->prodi_name }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="w-full md:w-auto">
+          <label for="year-select" class="block text-white text-sm font-medium mb-2">Tahun Kelulusan</label>
+          <select id="year-select" class="w-full md:w-40 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary-500">
+            <!-- Years will be populated by JavaScript based on prodi selection -->
+          </select>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
+          <h3 class="text-xl font-bold text-white mb-4 text-center">Distribusi Pekerjaan</h3>
+          <div class="relative">
+            <canvas id="prodiJobChart" class="max-w-full mx-auto" height="280"></canvas>
+
+            <div id="noProdiDataMessage" class="absolute inset-0 flex items-center justify-center hidden">
+              <div class="text-slate-400 text-center">
+                <i class="fas fa-chart-pie text-3xl mb-3 opacity-30"></i>
+                <p>Belum ada data</p>
+              </div>
+            </div>
+
+            <div id="prodiChartLoader" class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
+              <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <h3 class="text-xl font-bold text-white mb-4">Detail Alumni <span id="prodi-year-title"></span></h3>
+          <div id="prodi-details" class="bg-slate-800/50 rounded-lg p-4">
+            <!-- Will be populated by JavaScript -->
+            <p class="text-slate-400 text-center py-4">Pilih program studi dan tahun untuk melihat detail.</p>
           </div>
         </div>
       </div>
@@ -437,6 +499,7 @@
               <li><a href="#statistik" class="text-slate-400 hover:text-white">Statistik</a></li>
               <li><a href="#tren" class="text-slate-400 hover:text-white">Tren Alumni</a></li>
               <li><a href="#jenis-pekerjaan" class="text-slate-400 hover:text-white">Jenis Pekerjaan</a></li>
+              <li><a href="#per-prodi" class="text-slate-400 hover:text-white">Per Prodi</a></li>
             </ul>
           </div>
           <div>
@@ -444,15 +507,15 @@
             <ul class="space-y-2">
               <li class="flex items-center text-slate-400">
                 <i class="fas fa-map-marker-alt w-5 text-primary-500"></i>
-                <span>Jl. Pendidikan No. 123, Jakarta</span>
+                <span>Jl. Brigjend Dharsono Bypass No.20,Kabupaten Cirebon</span>
               </li>
               <li class="flex items-center text-slate-400">
                 <i class="fas fa-envelope w-5 text-primary-500"></i>
-                <span>info@institutprimabangsa.ac.id</span>
+                <span>info@ipbcirebon.ac.id</span>
               </li>
               <li class="flex items-center text-slate-400">
                 <i class="fas fa-phone w-5 text-primary-500"></i>
-                <span>+62 21 5569 9876</span>
+                <span>+62-838-2440-8999</span>
               </li>
             </ul>
           </div>
@@ -585,11 +648,11 @@
       setTimeout(() => {
         const chartLoader = document.getElementById('chartLoader');
         const jobChartLoader = document.getElementById('jobChartLoader');
-        
+
         if (chartLoader) {
           chartLoader.style.display = 'none';
         }
-        
+
         if (jobChartLoader) {
           jobChartLoader.style.display = 'none';
         }
@@ -604,7 +667,7 @@
         const studiLanjutPercent = {{ $stats['studi_lanjut_percent'] }};
         const wirausahaPercent = {{ $stats['wirausaha_percent'] }};
         const mengurusKeluargaPercent = {{ $stats['mengurus_keluarga_percent'] }};
-        
+
         const statusPieChart = new Chart(statusPieChartCtx, {
           type: 'doughnut',
           data: {
@@ -675,10 +738,10 @@
       if (alumniChartCtx) {
         // Mendapatkan data dari controller
         const yearlyData = @json($stats['yearly_data'] ?? []);
-        
+
         // Ekstrak tahun dan urutkan
         const years = Object.keys(yearlyData).sort();
-        
+
         // Siapkan data untuk chart
         const bekerjaData = years.map(year => yearlyData[year]?.bekerja_percent || 0);
         const studiData = years.map(year => yearlyData[year]?.studi_lanjut_percent || 0);
@@ -851,7 +914,7 @@
                   fill: true
                 }
               ];
-            } 
+            }
             alumniChart.update();
           });
         });
@@ -864,11 +927,11 @@
       if (jobTypeChartCtx) {
         // Get job type data from controller
         const jobTypeData = @json($stats['job_type_distribution'] ?? []);
-        
+
         // Get all job types
         const allJobTypes = Object.keys(jobTypeData);
         const jobTypeCounts = allJobTypes.map(type => jobTypeData[type].count);
-        
+
         // Create an array of vibrant colors for each job type
         const colorPalette = [
           'rgba(34, 197, 94, 0.8)',   // green
@@ -887,16 +950,16 @@
           'rgba(8, 145, 178, 0.8)',   // sky
           'rgba(217, 70, 239, 0.8)',  // violet
         ];
-        
+
         // Assign colors to each job type
         const backgroundColors = allJobTypes.map((_, index) => {
           return colorPalette[index % colorPalette.length];
         });
-        
+
         const borderColors = backgroundColors.map(color => {
           return color.replace('0.8', '1');
         });
-        
+
         const jobTypeChart = new Chart(jobTypeChartCtx, {
           type: 'bar',  // Horizontal bar chart
           data: {
@@ -984,6 +1047,277 @@
         });
       }
       @endif
+
+      // Prodi-specific chart and data handling
+      // Hide prodi chart loader after initialization
+      setTimeout(() => {
+        const prodiChartLoader = document.getElementById('prodiChartLoader');
+        if (prodiChartLoader) {
+          prodiChartLoader.style.display = 'none';
+        }
+      }, 1000);
+
+      // Get DOM elements
+      const prodiSelect = document.getElementById('prodi-select');
+      const yearSelect = document.getElementById('year-select');
+      const prodiJobChartCtx = document.getElementById('prodiJobChart');
+      const prodiYearTitle = document.getElementById('prodi-year-title');
+      const prodiDetails = document.getElementById('prodi-details');
+      const noProdiDataMessage = document.getElementById('noProdiDataMessage');
+
+      // Initialize variables
+      let prodiJobChart = null;
+      const prodiStatsData = @json($prodiStats ?? []);
+
+      // Log the data to see what's available
+      console.log("Prodi Stats Data:", prodiStatsData);
+
+      // Function to populate year dropdown based on selected prodi
+      function populateYearDropdown(prodiId) {
+        if (!yearSelect) return;
+
+        yearSelect.innerHTML = '';
+
+        if (prodiStatsData[prodiId] && prodiStatsData[prodiId].yearly_stats) {
+          const years = Object.keys(prodiStatsData[prodiId].yearly_stats).sort((a, b) => b - a);
+
+          if (years.length > 0) {
+            years.forEach(year => {
+              const option = document.createElement('option');
+              option.value = year;
+              option.textContent = year;
+              yearSelect.appendChild(option);
+            });
+
+            // Trigger update for the first year
+            if (yearSelect.value) {
+              updateProdiJobChart(prodiId, yearSelect.value);
+            } else if (years.length > 0) {
+              yearSelect.value = years[0];
+              updateProdiJobChart(prodiId, years[0]);
+            }
+
+            // Hide "no data" message
+            if (noProdiDataMessage) {
+              noProdiDataMessage.classList.add('hidden');
+            }
+          } else {
+            displayNoData();
+          }
+        } else {
+          displayNoData();
+        }
+      }
+
+      // Function to display "No data" message
+      function displayNoData() {
+        if (prodiYearTitle) {
+          prodiYearTitle.textContent = " (Tidak ada data)";
+        }
+
+        if (prodiDetails) {
+          prodiDetails.innerHTML = '<p class="text-slate-400 text-center py-4">Tidak ada data yang tersedia.</p>';
+        }
+
+        // Show "no data" message
+        if (noProdiDataMessage) {
+          noProdiDataMessage.classList.remove('hidden');
+        }
+
+        // Clear chart if it exists
+        if (prodiJobChart) {
+          prodiJobChart.destroy();
+          prodiJobChart = null;
+        }
+      }
+
+      // Function to update the job distribution chart
+      function updateProdiJobChart(prodiId, year) {
+        console.log("Updating chart for prodi:", prodiId, "year:", year);
+
+        // Get job distribution data
+        const prodiName = prodiStatsData[prodiId]?.name || 'Unknown';
+        const yearData = prodiStatsData[prodiId]?.yearly_stats[year] || null;
+
+        console.log("Year data:", yearData);
+
+        // Update title
+        if (prodiYearTitle) {
+          prodiYearTitle.textContent = ` ${prodiName} - ${year}`;
+        }
+
+        // If no data, display message and return
+        if (!yearData || !yearData.job_distribution || Object.keys(yearData.job_distribution).length === 0) {
+          if (prodiDetails) {
+            prodiDetails.innerHTML = `<p class="text-slate-400 text-center py-4">Tidak ada data distribusi pekerjaan untuk ${prodiName} angkatan ${year}.</p>`;
+          }
+
+          // Show "no data" message
+          if (noProdiDataMessage) {
+            noProdiDataMessage.classList.remove('hidden');
+          }
+
+          // Clear chart if it exists
+          if (prodiJobChart) {
+            prodiJobChart.destroy();
+            prodiJobChart = null;
+          }
+          return;
+        }
+
+        // Hide "no data" message
+        if (noProdiDataMessage) {
+          noProdiDataMessage.classList.add('hidden');
+        }
+
+        // Prepare chart data
+        const jobLabels = Object.keys(yearData.job_distribution);
+        const jobCounts = jobLabels.map(job => yearData.job_distribution[job]);
+
+        console.log("Job labels:", jobLabels);
+        console.log("Job counts:", jobCounts);
+
+        // Generate colors for each job type
+        const colorPalette = [
+          'rgba(34, 197, 94, 0.8)',   // green
+          'rgba(249, 115, 22, 0.8)',  // orange
+          'rgba(59, 130, 246, 0.8)',  // blue
+          'rgba(139, 92, 246, 0.8)',  // purple
+          'rgba(236, 72, 153, 0.8)',  // pink
+          'rgba(234, 179, 8, 0.8)',   // yellow
+          'rgba(16, 185, 129, 0.8)',  // emerald
+          'rgba(6, 182, 212, 0.8)',   // cyan
+          'rgba(99, 102, 241, 0.8)',  // indigo
+          'rgba(244, 63, 94, 0.8)',   // rose
+        ];
+
+        const backgroundColors = jobLabels.map((_, index) => {
+          return colorPalette[index % colorPalette.length];
+        });
+
+        const borderColors = backgroundColors.map(color => {
+          return color.replace('0.8', '1');
+        });
+
+        // Create or update chart
+        if (prodiJobChart) {
+          console.log("Updating existing chart");
+          prodiJobChart.data.labels = jobLabels;
+          prodiJobChart.data.datasets[0].data = jobCounts;
+          prodiJobChart.data.datasets[0].backgroundColor = backgroundColors;
+          prodiJobChart.data.datasets[0].borderColor = borderColors;
+          prodiJobChart.update();
+        } else if (prodiJobChartCtx) {
+          console.log("Creating new chart");
+          prodiJobChart = new Chart(prodiJobChartCtx, {
+            type: 'pie',
+            data: {
+              labels: jobLabels,
+              datasets: [{
+                data: jobCounts,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: '#fff',
+                    usePointStyle: true,
+                    padding: 15,
+                    font: { size: 11 }
+                  }
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                  titleColor: '#fff',
+                  bodyColor: '#cbd5e1',
+                  padding: 10,
+                  borderColor: 'rgba(148, 163, 184, 0.2)',
+                  borderWidth: 1,
+                  displayColors: true,
+                  usePointStyle: true,
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.label || '';
+                      const value = context.raw || 0;
+                      const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                      const percentage = Math.round((value / total) * 100);
+                      return `${label}: ${value} alumni (${percentage}%)`;
+                    }
+                  }
+                }
+              },
+              animation: {
+                animateScale: true,
+                animateRotate: true
+              }
+            }
+          });
+        }
+
+        // Update details section
+        let detailsHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+        let total = 0;
+
+        jobLabels.forEach((job, index) => {
+          const count = yearData.job_distribution[job];
+          total += count;
+          const color = backgroundColors[index].replace('0.8', '1');
+
+          detailsHTML += `
+            <div class="bg-slate-700/50 rounded-lg p-3">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" style="background-color: ${color}"></div>
+                <h4 class="text-white font-medium">${job}</h4>
+              </div>
+              <p class="text-slate-300 ml-5">${count} alumni</p>
+            </div>
+          `;
+        });
+
+        detailsHTML += '</div>';
+
+        if (total > 0) {
+          detailsHTML += `<div class="mt-4 text-center text-slate-300">Total: ${total} alumni dengan informasi pekerjaan</div>`;
+        }
+
+        if (prodiDetails) {
+          prodiDetails.innerHTML = detailsHTML;
+        }
+      }
+
+      // Event listeners
+      if (prodiSelect) {
+        prodiSelect.addEventListener('change', function() {
+          console.log("Prodi changed to:", this.value);
+          populateYearDropdown(this.value);
+        });
+      }
+
+      if (yearSelect) {
+        yearSelect.addEventListener('change', function() {
+          console.log("Year changed to:", this.value);
+          const prodiId = prodiSelect.value;
+          updateProdiJobChart(prodiId, this.value);
+        });
+      }
+
+      // Initialize with first prodi
+      if (prodiSelect && Object.keys(prodiStatsData).length > 0) {
+        const firstProdiId = Object.keys(prodiStatsData)[0];
+        console.log("Initializing with first prodi:", firstProdiId);
+        prodiSelect.value = firstProdiId;
+        populateYearDropdown(firstProdiId);
+      } else {
+        console.log("No prodi data available");
+        displayNoData();
+      }
     });
   </script>
 </body>

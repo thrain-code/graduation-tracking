@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@yield('title', 'Admin Dashboard') - Institut Prima Bangsa</title>
-    
+
     <!-- Font utama -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Font Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <link rel="icon" href="{{ asset('assets/logo.ico') }}" type="image/x-icon">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -35,10 +36,10 @@
             },
         }
     </script>
-    
+
     <!-- Alpine.js for dropdowns -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
     <!-- Custom Styles -->
     <style>
         body {
@@ -49,70 +50,70 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .sidebar {
             background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(10px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .sidebar-link {
             transition: all 0.3s;
         }
-        
+
         .sidebar-link:hover, .sidebar-link.active {
             background: rgba(255, 255, 255, 0.1);
         }
-        
+
         .content-area {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
         }
-        
+
         .card {
             background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s;
         }
-        
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: rgba(255,255,255,0.05);
             border-radius: 4px;
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: rgba(255,255,255,0.2);
             border-radius: 4px;
         }
-        
+
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255,255,255,0.3);
         }
-        
+
         /* Alert popup styles */
         .alert-popup {
             backdrop-filter: blur(8px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
-        
+
         /* Main content wrapper to push footer down */
         .content-wrapper {
             flex: 1;
         }
     </style>
-    
+
     @stack('styles')
 </head>
 <body>
@@ -139,7 +140,7 @@
                 <i class="fas fa-university text-3xl text-primary-500 mr-3"></i>
                 <span class="text-white font-bold text-xl">Admin</span>
             </div>
-            
+
             <nav>
                 <ul class="space-y-2">
                     <li>
@@ -158,6 +159,12 @@
                         <a href="{{ route('prodi.index') }}" class="sidebar-link {{ request()->routeIs('prodi.*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
                             <i class="fas fa-building w-6"></i>
                             <span>Program Studi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('forms.index') }}" class="sidebar-link {{ request()->routeIs('forms.*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                            <i class="fas fa-clipboard-list w-6"></i>
+                            <span>Form Kuesioner</span>
                         </a>
                     </li>
                     <li class="pt-4 mt-4 border-t border-slate-800">
@@ -179,10 +186,10 @@
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        
+
         <!-- Mobile Sidebar Overlay -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden lg:hidden"></div>
-        
+
         <!-- Mobile Sidebar -->
         <aside id="mobileSidebar" class="sidebar fixed w-64 h-full overflow-y-auto p-4 z-20 -left-64 lg:hidden transition-all duration-300">
             <div class="flex items-center justify-between mb-8">
@@ -194,7 +201,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <nav>
                 <ul class="space-y-2">
                     <li>
@@ -215,6 +222,12 @@
                             <span>Program Studi</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('forms.index') }}" class="sidebar-link {{ request()->routeIs('forms.*') ? 'active text-white' : 'text-slate-400 hover:text-white' }} flex items-center px-4 py-3 rounded-lg">
+                            <i class="fas fa-clipboard-list w-6"></i>
+                            <span>Form Kuesioner</span>
+                        </a>
+                    </li>
                     <li class="pt-4 mt-4 border-t border-slate-800">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
@@ -227,7 +240,7 @@
                 </ul>
             </nav>
         </aside>
-        
+
         <!-- Main Content -->
         <main class="flex-1 ml-0 lg:ml-64 min-h-screen flex flex-col">
             <!-- Header -->
@@ -236,12 +249,12 @@
                     <h1 class="text-xl font-bold text-white">@yield('page-title', 'Dashboard')</h1>
                 </div>
             </header>
-            
+
             <!-- Content -->
             <div class="p-4 md:p-6 flex-grow">
                 @yield('content')
             </div>
-            
+
             <!-- Footer -->
             <footer class="bg-slate-800 p-6 mt-auto">
                 <div class="text-center text-slate-500 text-sm">
@@ -250,7 +263,7 @@
             </footer>
         </main>
     </div>
-    
+
     @yield('modals')
 
     <script>
@@ -260,20 +273,20 @@
             const mobileSidebar = document.getElementById('mobileSidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
             const closeSidebar = document.getElementById('closeSidebar');
-            
+
             if (sidebarToggle && mobileSidebar && sidebarOverlay && closeSidebar) {
                 sidebarToggle.addEventListener('click', function() {
                     mobileSidebar.classList.remove('-left-64');
                     mobileSidebar.classList.add('left-0');
                     sidebarOverlay.classList.remove('hidden');
                 });
-                
+
                 function hideSidebar() {
                     mobileSidebar.classList.remove('left-0');
                     mobileSidebar.classList.add('-left-64');
                     sidebarOverlay.classList.add('hidden');
                 }
-                
+
                 closeSidebar.addEventListener('click', hideSidebar);
                 sidebarOverlay.addEventListener('click', hideSidebar);
             }
@@ -305,40 +318,40 @@
             function showAlert(message, type = 'info', duration = 5000) {
                 // Create alert from template
                 const alert = alertTemplate.content.cloneNode(true).querySelector('.alert-popup');
-                
+
                 // Set alert type styling
                 const alertConfig = alertTypes[type] || alertTypes.info;
                 alert.classList.add(alertConfig.bgClass);
                 alert.querySelector('.alert-icon').className = `alert-icon mr-3 text-lg ${alertConfig.iconClass}`;
-                
+
                 // Set message
                 alert.querySelector('.alert-message').textContent = message;
-                
+
                 // Add to container
                 alertsContainer.appendChild(alert);
-                
+
                 // Fade in animation (small delay to ensure DOM is updated)
                 setTimeout(() => {
                     alert.classList.remove('translate-x-full');
                 }, 10);
-                
+
                 // Set up auto-dismiss
                 const dismissTimeout = setTimeout(() => {
                     dismissAlert(alert);
                 }, duration);
-                
+
                 // Store the timeout ID with the alert
                 alert.dataset.timeoutId = dismissTimeout;
-                
+
                 // Set up manual close button
                 alert.querySelector('.close-alert').addEventListener('click', function() {
                     clearTimeout(parseInt(alert.dataset.timeoutId));
                     dismissAlert(alert);
                 });
-                
+
                 return alert;
             }
-            
+
             // Function to dismiss an alert
             function dismissAlert(alert) {
                 alert.classList.add('translate-x-full', 'opacity-0');
@@ -348,29 +361,29 @@
                     }
                 }, 300); // Match the transition duration
             }
-            
+
             // Show any Laravel flash messages as alerts
             @if(session('success'))
                 showAlert("{{ session('success') }}", 'success');
             @endif
-            
+
             @if(session('error'))
                 showAlert("{{ session('error') }}", 'error');
             @endif
-            
+
             @if(session('warning'))
                 showAlert("{{ session('warning') }}", 'warning');
             @endif
-            
+
             @if(session('info'))
                 showAlert("{{ session('info') }}", 'info');
             @endif
-            
+
             // Make the alert function available globally
             window.showAlert = showAlert;
         });
     </script>
-    
+
     @stack('scripts')
 </body>
 </html>
