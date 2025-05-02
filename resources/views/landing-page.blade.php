@@ -254,7 +254,7 @@
           <h3 class="text-xl font-bold text-white mb-4 text-center">Distribusi Status Alumni</h3>
           <div class="relative">
             <canvas id="statusPieChart" class="max-w-full mx-auto" height="280"></canvas>
-            
+
             <!-- Fallback message when no data is available -->
             @if(count($alumni) == 0 || ($stats['bekerja_count'] + $stats['studi_lanjut_count'] + $stats['wirausaha_count'] + $stats['mengurus_keluarga_count'] == 0))
             <div class="absolute inset-0 flex items-center justify-center">
@@ -266,10 +266,10 @@
             @endif
           </div>
         </div>
-        
+
         <div class="md:col-span-2 backdrop-blur-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 shadow-xl border border-slate-700/30">
           <h3 class="text-xl font-bold text-white mb-4">Informasi Tambahan</h3>
-          
+
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
@@ -277,35 +277,35 @@
               </div>
               <p class="text-slate-300 text-center text-sm">Total Alumni</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-green-400 text-2xl font-bold">{{ $stats['bekerja_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Alumni Bekerja</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-blue-400 text-2xl font-bold">{{ $stats['studi_lanjut_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Alumni Studi Lanjut</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-orange-400 text-2xl font-bold">{{ $stats['wirausaha_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Alumni Wirausaha</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 <span class="text-purple-400 text-2xl font-bold">{{ $stats['mengurus_keluarga_count'] }}</span>
               </div>
               <p class="text-slate-300 text-center text-sm">Mengurus Keluarga</p>
             </div>
-            
+
             <div class="bg-slate-800/50 rounded-lg p-4">
               <div class="text-center mb-2">
                 @php
@@ -354,7 +354,7 @@
           </div>
         </div>
         @endif
-        
+
         <div id="chartLoader"
           class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
           <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
@@ -391,14 +391,14 @@
               </div>
             </div>
             @endif
-            
+
             <div id="jobChartLoader"
               class="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm rounded-lg">
               <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
             </div>
           </div>
         </div>
-        
+
         <div class="md:col-span-1">
           <h3 class="text-xl font-bold text-white mb-4">Keterangan</h3>
           <div class="bg-slate-800/50 rounded-lg p-4 mb-4">
@@ -406,7 +406,7 @@
               Setiap warna menunjukkan jenis pekerjaan yang berbeda. Hover pada batang untuk melihat detail.
             </p>
           </div>
-          
+
           <div class="bg-slate-800/50 rounded-lg p-4 mt-4">
             <h4 class="text-white font-medium mb-2">Tentang Visualisasi</h4>
             <p class="text-slate-300 text-sm">
@@ -444,15 +444,15 @@
             <ul class="space-y-2">
               <li class="flex items-center text-slate-400">
                 <i class="fas fa-map-marker-alt w-5 text-primary-500"></i>
-                <span>Jl. Pendidikan No. 123, Jakarta</span>
+                <span>Jl. Brigjend Dharsono Bypass No.20,Kabupaten Cirebon</span>
               </li>
               <li class="flex items-center text-slate-400">
                 <i class="fas fa-envelope w-5 text-primary-500"></i>
-                <span>info@institutprimabangsa.ac.id</span>
+                <span>info@ipbcirebon.ac.id</span>
               </li>
               <li class="flex items-center text-slate-400">
                 <i class="fas fa-phone w-5 text-primary-500"></i>
-                <span>+62 21 5569 9876</span>
+                <span>+62-838-2440-8999</span>
               </li>
             </ul>
           </div>
@@ -585,11 +585,11 @@
       setTimeout(() => {
         const chartLoader = document.getElementById('chartLoader');
         const jobChartLoader = document.getElementById('jobChartLoader');
-        
+
         if (chartLoader) {
           chartLoader.style.display = 'none';
         }
-        
+
         if (jobChartLoader) {
           jobChartLoader.style.display = 'none';
         }
@@ -604,7 +604,7 @@
         const studiLanjutPercent = {{ $stats['studi_lanjut_percent'] }};
         const wirausahaPercent = {{ $stats['wirausaha_percent'] }};
         const mengurusKeluargaPercent = {{ $stats['mengurus_keluarga_percent'] }};
-        
+
         const statusPieChart = new Chart(statusPieChartCtx, {
           type: 'doughnut',
           data: {
@@ -675,10 +675,10 @@
       if (alumniChartCtx) {
         // Mendapatkan data dari controller
         const yearlyData = @json($stats['yearly_data'] ?? []);
-        
+
         // Ekstrak tahun dan urutkan
         const years = Object.keys(yearlyData).sort();
-        
+
         // Siapkan data untuk chart
         const bekerjaData = years.map(year => yearlyData[year]?.bekerja_percent || 0);
         const studiData = years.map(year => yearlyData[year]?.studi_lanjut_percent || 0);
@@ -851,7 +851,7 @@
                   fill: true
                 }
               ];
-            } 
+            }
             alumniChart.update();
           });
         });
@@ -864,11 +864,11 @@
       if (jobTypeChartCtx) {
         // Get job type data from controller
         const jobTypeData = @json($stats['job_type_distribution'] ?? []);
-        
+
         // Get all job types
         const allJobTypes = Object.keys(jobTypeData);
         const jobTypeCounts = allJobTypes.map(type => jobTypeData[type].count);
-        
+
         // Create an array of vibrant colors for each job type
         const colorPalette = [
           'rgba(34, 197, 94, 0.8)',   // green
@@ -887,16 +887,16 @@
           'rgba(8, 145, 178, 0.8)',   // sky
           'rgba(217, 70, 239, 0.8)',  // violet
         ];
-        
+
         // Assign colors to each job type
         const backgroundColors = allJobTypes.map((_, index) => {
           return colorPalette[index % colorPalette.length];
         });
-        
+
         const borderColors = backgroundColors.map(color => {
           return color.replace('0.8', '1');
         });
-        
+
         const jobTypeChart = new Chart(jobTypeChartCtx, {
           type: 'bar',  // Horizontal bar chart
           data: {
